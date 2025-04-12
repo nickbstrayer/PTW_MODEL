@@ -1,3 +1,4 @@
+from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 
 import streamlit as st
 import pandas as pd
@@ -9,13 +10,14 @@ from Scripts.streamlit_data_integration import render_data_integration_tab
 st.set_page_config(page_title="PTW Win Probability Tool", layout="wide")
 st.title("Price-to-Win Intelligence Suite")
 
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", [
-    "Scenario Comparison",
-    "Salary Estimator",
-    "Live PTW Calculator",
-    "Data Integration"
+selection = st.sidebar.radio("Go to", [
+    "Scenario Comparison", 
+    "Salary Estimator", 
+    "Live PTW Calculator", 
+    "Data Integration",
+    "SAM Vendor Lookup"  # 👈 Add this line
 ])
+
 
 if page == "Scenario Comparison":
     st.subheader("Scenario-Based Rate Modeling")
@@ -67,5 +69,6 @@ elif page == "Live PTW Calculator":
     st.metric(label="Adjusted Rate ($/hr)", value=f"${adjusted_rate:.2f}")
     st.metric(label="Win Probability (%)", value=f"{int(win_prob * 100)}%")
 
-elif page == "Data Integration":
-    render_data_integration_tab()
+elif selection == "SAM Vendor Lookup":
+    render_sam_vendor_lookup_tab()
+
