@@ -1,5 +1,5 @@
-from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
-from Scripts.streamlit_data_integration import render_data_integration_tab
+from scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
+from scripts.streamlit_data_integration import render_data_integration_tab
 
 import streamlit as st
 import pandas as pd
