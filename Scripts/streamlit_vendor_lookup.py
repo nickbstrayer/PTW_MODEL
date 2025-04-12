@@ -12,18 +12,18 @@ def render_sam_vendor_lookup_tab():
     if user_input:
         st.info(f"Looking up SAM.gov data for: {user_input}")
 
-        headers = {
-            "Accept": "application/json",
-            "Authorization": f"Bearer {API_KEY}"
+        base_url = "https://api.sam.gov/entity-information/v2/entities"
+        params = {
+            "api_key": API_KEY
         }
 
         if search_by == "CAGE Code / UEI":
-            url = f"https://api.sam.gov/entity-information/v2/entities?cageCode={user_input}"
+            params["cageCode"] = user_input
         else:
-            url = f"https://api.sam.gov/entity-information/v2/entities?name={user_input}"
+            params["name"] = user_input
 
         try:
-            response = requests.get(url, headers=headers)
+            response = requests.get(base_url, params=params)
             if response.status_code == 403:
                 st.error("❌ Forbidden: Your API key may be invalid or access is restricted.")
                 st.code(response.text)
@@ -40,7 +40,7 @@ def render_sam_vendor_lookup_tab():
                 st.warning("⚠️ No results found. Try refining your search.")
                 return
 
-            vendor = entities[0]  # just show the first result
+            vendor = entities[0]
 
             fields = {
                 "Legal Business Name": vendor.get("legalBusinessName"),
