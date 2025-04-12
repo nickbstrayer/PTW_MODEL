@@ -1,56 +1,61 @@
 import streamlit as st
 import requests
 
-# Retrieve the API key securely from Streamlit Secrets
 API_KEY = st.secrets["SAM_API_KEY"]
 
-# Function to call SAM.gov API
-def search_sam_gov(search_type, query):
-    headers = {
-        "Accept": "application/json",
-        "X-API-KEY": API_KEY
-    }
-
-    if search_type == "Vendor Name":
-        url = "https://api.sam.gov/entity-information/v2/entities"
-        params = {"name": query}
-    else:  # CAGE or UEI
-        if len(query) > 5:
-            params = {"ueiSAM": query}
-        else:
-            params = {"cageCode": query}
-        url = "https://api.sam.gov/entity-information/v2/entities"
-
-    try:
-        response = requests.get(url, headers=headers, params=params)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.HTTPError as err:
-        st.error("❌ Error retrieving data from SAM.gov. Please check the key or query format.")
-        st.text(str(err))
-        return None
-
-# Streamlit UI
 def render_sam_vendor_lookup_tab():
     st.header("SAM Vendor Lookup")
 
-    search_type = st.radio("Search by:", ["CAGE Code / UEI", "Vendor Name"])
-    query = st.text_input("Enter CAGE Code / UEI" if search_type == "CAGE Code / UEI" else "Enter Vendor Name")
+    search_by = st.radio("Search by:", ["CAGE Code / UEI", "Vendor Name"])
+    user_input = st.text_input(f"Enter {search_by}").strip()
 
-    if query:
-        st.info(f"Looking up SAM.gov data for: {query}")
-        data = search_sam_gov(search_type, query)
+    if user_input:
+        st.info(f"Looking up SAM.gov data for: {user_input}")
 
-        if data and data.get("entities"):
-            entity = data["entities"][0]  # First matched entity
-            st.write("**Legal Business Name:**", entity.get("legalBusinessName", "N/A"))
-            st.write("**UEI:**", entity.get("ueiSAM", "N/A"))
-            st.write("**CAGE Code:**", entity.get("cageCode", "N/A"))
-            st.write("**Status:**", entity.get("status", {}).get("status", "N/A"))
-            st.write("**City:**", entity.get("address", {}).get("city", "N/A"))
-            st.write("**State:**", entity.get("address", {}).get("stateOrProvince", "N/A"))
-            st.write("**Country:**", entity.get("address", {}).get("countryCode", "N/A"))
-        elif data:
-            st.warning("No matching vendor found. Please refine your input or try a different search method.")
+        headers = {
+            "Accept": "application/json",
+            "Authorization": f"Bearer {API_KEY}"
+        }
+
+        if search_by == "CAGE Code / UEI":
+            url = f"https://api.sam.gov/entity-information/v2/entities?cageCode={user_input}"
         else:
+            url = f"https://api.sam.gov/entity-information/v2/entities?name={user_input}"
+
+        try:
+            response = requests.get(url, headers=headers)
+            if response.status_code == 403:
+                st.error("❌ Forbidden: Your API key may be invalid or access is restricted.")
+                st.code(response.text)
+                return
+            elif response.status_code != 200:
+                st.error(f"❌ Error retrieving data. Status code: {response.status_code}")
+                st.code(response.text)
+                return
+
+            data = response.json()
+            entities = data.get("entities", [])
+
+            if not entities:
+                st.warning("⚠️ No results found. Try refining your search.")
+                return
+
+            vendor = entities[0]  # just show the first result
+
+            fields = {
+                "Legal Business Name": vendor.get("legalBusinessName"),
+                "UEI": vendor.get("ueiSAM"),
+                "CAGE Code": vendor.get("cageCode"),
+                "Status": vendor.get("entityStatus", {}).get("entityStatus"),
+                "City": vendor.get("physicalAddress", {}).get("city"),
+                "State": vendor.get("physicalAddress", {}).get("stateOrProvince"),
+                "Country": vendor.get("physicalAddress", {}).get("countryCode")
+            }
+
+            for key, value in fields.items():
+                if value:
+                    st.write(f"**{key}:** {value}")
+
+        except Exception as e:
             st.error("An error occurred during the lookup. Check your API key or connection.")
+            st.exception(e)
