@@ -1,46 +1,29 @@
-import pandas as pd
 import streamlit as st
+import pandas as pd
 from Scripts.gsa_fpds_data_pull import fetch_gsa_calc_rates, fetch_fpds_contracts
-import io
-
 
 def render_data_integration_tab():
-    st.header("📈 Data Integration – PTW Intelligence Feed")
+    st.header("🔍 GSA CALC Rate Lookup")
 
-    # --- GSA CALC ---
-    st.subheader("🔍 GSA CALC Rate Lookup")
     labor_input = st.text_input("Enter Labor Category", "Program Manager")
-    gsa_data = pd.DataFrame()
-
     if st.button("Fetch GSA Rates"):
-        gsa_data = fetch_gsa_calc_rates(labor_input)
-        if not gsa_data.empty:
-            st.dataframe(gsa_data)
-            csv = gsa_data.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                "📥 Download GSA Data as CSV",
-                data=csv,
-                file_name=f"gsa_rates_{labor_input.replace(' ', '_')}.csv",
-                mime='text/csv'
-            )
+        rates = fetch_gsa_calc_rates(labor_input)
+        if not rates.empty:
+            st.dataframe(rates)
+            st.download_button("📥 Download GSA Data as CSV", rates.to_csv(index=False), file_name="gsa_rates.csv")
         else:
-            st.warning("No data found from GSA CALC.")
+            st.warning("No matching labor category found. Please refine your input.")
 
-    # --- FPDS Feed ---
-    st.subheader("📦 FPDS.gov Contract History")
+    st.markdown("---")
+
+    st.header("📦 FPDS.gov Contract History")
     keyword_input = st.text_input("Enter FPDS Search Keyword", "Cybersecurity")
-    fpds_data = pd.DataFrame()
-
     if st.button("Fetch FPDS Contracts"):
-        fpds_data = fetch_fpds_contracts(keyword_input)
-        if not fpds_data.empty:
-            st.dataframe(fpds_data)
-            csv = fpds_data.to_csv(index=False).encode('utf-8')
-            st.download_button(
-                "📥 Download FPDS Results as CSV",
-                data=csv,
-                file_name=f"fpds_{keyword_input.replace(' ', '_')}.csv",
-                mime='text/csv'
-            )
+        contracts = fetch_fpds_contracts(keyword_input)
+        if not contracts.empty:
+            st.dataframe(contracts)
+            st.download_button("📥 Download FPDS Data as CSV", contracts.to_csv(index=False), file_name="fpds_contracts.csv")
         else:
-            st.warning("No FPDS records found for this keyword.")
+            st.warning("No contracts found for this keyword. Try a different term.")
+
+    st.info("This feature integrates public data to support PTW analytics.")
