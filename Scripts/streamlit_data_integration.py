@@ -1,4 +1,5 @@
 import streamlit as st
+from Scripts.streamlit_data_integration import render_data_integration_tab
 
 def render_data_integration_tab():
     st.header("📈 Data Integration – PTW Intelligence Feed")
