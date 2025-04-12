@@ -4,7 +4,7 @@ import pandas as pd
 import joblib
 from io import BytesIO
 
-from scripts.streamlit_data_integration import render_data_integration_tab
+from Scripts.streamlit_data_integration import render_data_integration_tab
 
 st.set_page_config(page_title="PTW Win Probability Tool", layout="wide")
 st.title("Price-to-Win Intelligence Suite")
