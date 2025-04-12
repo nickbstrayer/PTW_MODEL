@@ -1,57 +1,55 @@
 import streamlit as st
+import requests
+import difflib
 
-# Simulated vendor directory (placeholder for actual API query results)
-vendor_directory = {
-    "5T2B3": {
-        "Legal Business Name": "Acme Federal Services LLC",
-        "UEI": "ABCD12345678",
-        "CAGE Code": "5T2B3",
-        "Status": "Active",
-        "City": "Washington",
-        "State": "DC",
-        "Country": "USA"
-    },
-    "8J7K2": {
-        "Legal Business Name": "Defense Solutions Inc.",
-        "UEI": "EFGH98765432",
-        "CAGE Code": "8J7K2",
-        "Status": "Inactive",
-        "City": "Arlington",
-        "State": "VA",
-        "Country": "USA"
-    }
-}
+SAM_API_KEY = "YOUR_SAM_API_KEY_HERE"  # Replace or read from env var
 
 def render_sam_vendor_lookup_tab():
     st.header("SAM Vendor Lookup")
-    search_type = st.radio("Search by", ["CAGE/UEI", "Vendor Name"])
 
-    query = st.text_input(f"Enter {search_type}").strip().upper()
+    search_mode = st.radio("Search by:", ["CAGE Code / UEI", "Vendor Name"])
+
+    if search_mode == "CAGE Code / UEI":
+        query = st.text_input("Enter CAGE Code or UEI")
+    else:
+        query = st.text_input("Enter Vendor Name")
 
     if query:
         st.info(f"Looking up SAM.gov data for: {query}")
-        result = None
 
-        # Lookup by CAGE or UEI
-        if search_type == "CAGE/UEI":
-            for data in vendor_directory.values():
-                if data["CAGE Code"] == query or data["UEI"] == query:
-                    result = data
-                    break
-
-        # Lookup by Vendor Name
-        elif search_type == "Vendor Name":
-            for data in vendor_directory.values():
-                if query in data["Legal Business Name"].upper():
-                    result = data
-                    break
-
-        # Display result or suggestions
-        if result:
-            for key, value in result.items():
-                st.write(f"**{key}:** {value}")
+        if search_mode == "Vendor Name":
+            endpoint = f"https://api.sam.gov/entity-information/v2/entities?name={query}&api_key={SAM_API_KEY}"
         else:
-            st.warning("No exact match found.")
-            st.markdown("### 🔍 Try one of the following suggestions:")
-            for data in vendor_directory.values():
-                st.write(f"- **{data['Legal Business Name']}** (CAGE: {data['CAGE Code']}, UEI: {data['UEI']})")
+            endpoint = f"https://api.sam.gov/entity-information/v2/entities/{query}?api_key={SAM_API_KEY}"
+
+        response = requests.get(endpoint)
+
+        if response.status_code == 200:
+            data = response.json()
+            entities = data.get("entityInformation", [])
+
+            if not entities:
+                st.warning("No vendor match found. Try another name.")
+            else:
+                best_match = entities[0]
+                display_vendor_info(best_match)
+
+        else:
+            st.error("Error retrieving data from SAM.gov. Please check the key or query format.")
+
+def display_vendor_info(entity):
+    name = entity.get("legalBusinessName", "N/A")
+    uei = entity.get("uei", "N/A")
+    cage = entity.get("cageCode", "N/A")
+    status = entity.get("status", {}).get("status", "N/A")
+    city = entity.get("mailingAddress", {}).get("city", "N/A")
+    state = entity.get("mailingAddress", {}).get("stateOrProvince", "N/A")
+    country = entity.get("mailingAddress", {}).get("countryCode", "N/A")
+
+    st.markdown(f"**Legal Business Name:** {name}")
+    st.markdown(f"**UEI:** {uei}")
+    st.markdown(f"**CAGE Code:** {cage}")
+    st.markdown(f"**Status:** {status}")
+    st.markdown(f"**City:** {city}")
+    st.markdown(f"**State:** {state}")
+    st.markdown(f"**Country:** {country}")
