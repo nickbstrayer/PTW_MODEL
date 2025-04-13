@@ -31,13 +31,11 @@ def render_landing_page():
             display: flex;
             gap: 1.5rem;
         }
-        .nav-links button {
-            background: none;
-            border: none;
+        .nav-links a {
             color: white;
+            text-decoration: none;
             font-weight: 500;
             font-size: 1rem;
-            cursor: pointer;
         }
         .cta-button {
             padding: 0.75rem 2rem;
@@ -62,10 +60,8 @@ def render_landing_page():
         <div class='top-nav'>
             <div>PTW Intelligence Suite</div>
             <div class='nav-links'>
-                <form action='#' onsubmit="return false;">
-                    <button onclick="window.location.href='/?page=auth&mode=login'">Log in</button>
-                    <button onclick="window.location.href='/?page=auth&mode=register'">Register</button>
-                </form>
+                <a href='/?page=auth&mode=login'>Log in</a>
+                <a href='/?page=auth&mode=register'>Register</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -131,10 +127,10 @@ def render_landing_page():
 def main_app():
     initialize_session_state()
 
-    query_params = st.experimental_get_query_params()
-    if query_params.get("page", [None])[0] == "auth":
+    query_params = st.query_params
+    if query_params.get("page") == "auth":
         st.session_state.page = "auth"
-        st.session_state.show_register = query_params.get("mode", ["register"])[0] == "register"
+        st.session_state.show_register = query_params.get("mode") == "register"
 
     if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
         render_landing_page()
