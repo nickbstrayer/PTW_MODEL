@@ -1,31 +1,36 @@
 import streamlit as st
+import pandas as pd
 
-# Dummy user database for demo
-def get_all_users():
-    return [
-        {"username": "admin", "email": "admin@example.com", "status": "active"},
-        {"username": "nick", "email": "nick@example.com", "status": "unpaid"},
-    ]
+# Sample placeholder admin table data
+USERS_DB = pd.DataFrame([
+    {"username": "admin", "email": "admin@example.com", "role": "admin", "status": "active"},
+    {"username": "demo", "email": "demo@example.com", "role": "user", "status": "unpaid"},
+    {"username": "tester", "email": "tester@example.com", "role": "user", "status": "active"},
+])
 
 def render_admin_dashboard_tab():
     st.header("🔐 Admin Dashboard")
-    st.markdown("Use this dashboard to manage users and view subscription status.")
 
-    # List users
-    st.subheader("📋 Registered Users")
-    users = get_all_users()
-    for user in users:
-        col1, col2, col3 = st.columns([3, 4, 2])
-        col1.write(user["username"])
-        col2.write(user["email"])
-        col3.write(f"Status: {user['status'].capitalize()}")
+    st.markdown("Manage registered users and application access.")
 
-        # Optional admin actions
-        with col3:
-            if st.button(f"Revoke {user['username']}", key=f"revoke_{user['username']}"):
-                st.success(f"✅ Revoked {user['username']} (demo only)")
-            if st.button(f"Mark Unpaid {user['username']}", key=f"unpaid_{user['username']}"):
-                st.warning(f"⚠️ Marked {user['username']} as unpaid (demo only)")
+    with st.expander("📋 View All Users"):
+        st.dataframe(USERS_DB, use_container_width=True)
 
-    st.markdown("---")
-    st.info("🧪 This is a demo dashboard. Replace with database integration for production.")
+    with st.expander("✏️ Update User Status"):
+        selected_user = st.selectbox("Select user to update", USERS_DB["username"])
+        new_status = st.selectbox("Set new status", ["active", "unpaid", "revoked"])
+        if st.button("Update Status"):
+            USERS_DB.loc[USERS_DB["username"] == selected_user, "status"] = new_status
+            st.success(f"Updated {selected_user}'s status to {new_status}.")
+
+    with st.expander("➕ Add New User (Simulation)"):
+        new_username = st.text_input("Username")
+        new_email = st.text_input("Email")
+        new_role = st.selectbox("Role", ["user", "admin"])
+        if st.button("Add User"):
+            if new_username and new_email:
+                new_row = {"username": new_username, "email": new_email, "role": new_role, "status": "active"}
+                USERS_DB.loc[len(USERS_DB)] = new_row
+                st.success("User added (simulated only – no DB persistence).")
+            else:
+                st.warning("Please provide both username and email.")
