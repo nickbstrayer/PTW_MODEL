@@ -4,6 +4,7 @@ from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
 from Scripts.stripe_billing_integration import render_stripe_billing_tab
 from Scripts.admin_dashboard import render_admin_dashboard_tab
+import streamlit.components.v1 as components
 
 st.set_page_config(
     page_title="Price-to-Win Intelligence Suite",
@@ -11,109 +12,151 @@ st.set_page_config(
     page_icon="📊"
 )
 
-# Inject modern UI styling
 st.markdown("""
     <style>
-    html, body, [class*="css"]  {
-        font-family: 'Segoe UI', sans-serif;
+    .main-container {
+        padding: 2rem;
+        background-color: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
     .block-container {
-        padding: 2rem 3rem;
-        background: #f9fafb;
+        padding-top: 2rem;
+        max-width: 95%;
     }
-    .stApp header { display: none; }
-    .stApp footer { display: none; }
-    .stButton > button {
-        background-color: #0a2540;
+    .stButton>button {
+        border-radius: 8px;
+        background-color: #1f4e79;
         color: white;
-        border: none;
-        padding: 0.6rem 1.2rem;
-        border-radius: 6px;
         font-weight: 600;
+        font-size: 1rem;
+        padding: 0.6rem 1.4rem;
+        border: none;
     }
-    .stButton > button:hover {
-        background-color: #11365e;
+    .stButton>button:hover {
+        background-color: #163b5f;
     }
-    .main-card {
-        background-color: white;
-        border-radius: 12px;
-        padding: 2rem;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.07);
-        margin-top: 1rem;
+    .sidebar-title {
+        font-size: 1.2rem;
+        font-weight: 700;
+        margin: 1rem 0;
+        color: #1f4e79;
     }
-    .avatar {
+    .user-profile {
         display: flex;
         align-items: center;
-        gap: 1rem;
-        margin-bottom: 2rem;
+        margin-top: 1rem;
+        padding: 0.5rem;
+        background-color: #eef3f7;
+        border-radius: 10px;
     }
-    .avatar img {
-        width: 48px;
-        height: 48px;
+    .user-avatar {
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
+        margin-right: 0.75rem;
     }
-    .avatar .info {
-        font-size: 1rem;
+    .user-info {
+        font-weight: 500;
+        font-size: 0.9rem;
+        color: #333;
+    }
+    .animated-header {
+        animation: fadeIn 1s ease-in-out;
+    }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     </style>
 """, unsafe_allow_html=True)
 
+def render_landing_page():
+    st.markdown("""
+    <div class='animated-header'>
+        <h2>Welcome to the Price-to-Win Intelligence Suite</h2>
+    </div>
+    """, unsafe_allow_html=True)
+    st.markdown("""
+        The PTW Intelligence Suite helps federal contractors make data-driven decisions with real-time insights
+        from government procurement databases. Here's what you can do:
+
+        - 🔍 Perform vendor lookups using SAM.gov data.
+        - 📊 Integrate and analyze FPDS and GSA CALC data.
+        - 💳 Manage your subscription and account.
+        - 🛠️ Admins can manage users and monitor performance.
+
+        ### How to Use:
+        1. Use the login panel to sign in or register.
+        2. After logging in, navigate the sidebar to explore features.
+        3. Contact support for any access or technical issues.
+
+        ⚠️ **Disclaimer:** This application provides data aggregation and visualization for informational purposes only.
+        Always validate results with official government sources.
+    """)
+
 def main_app():
     initialize_session_state()
 
+    if not st.session_state.get("is_authenticated"):
+        render_auth_page()
+        return
+
     with st.sidebar:
-        st.markdown("<h2 style='margin-bottom: 1rem;'>📘 PTW Intelligence Suite</h2>", unsafe_allow_html=True)
-        if st.session_state.is_authenticated:
-            st.markdown(f"""
-            <div class='avatar'>
-                <img src="https://api.dicebear.com/7.x/initials/svg?seed={st.session_state.login_email}" />
-                <div class='info'>
-                    <strong>{st.session_state.login_email}</strong><br>
-                    <small>{st.session_state.user_role.title()} Account</small>
-                </div>
-            </div>
-            """, unsafe_allow_html=True)
+        st.image("https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png", width=140)
+        st.markdown("<div class='sidebar-title'>📘 Navigation</div>", unsafe_allow_html=True)
 
         tabs = [
+            "🏠 Home",
             "📈 Data Integration",
             "🔍 SAM Vendor Lookup",
             "💳 Manage Subscription",
             "🛠️ Admin Dashboard",
-            "🔐 User Login"
+            "🔐 Logout",
         ]
-        selected_tab = st.radio("Navigation", tabs)
+        selected_tab = st.radio("", tabs, label_visibility="collapsed")
 
-    st.markdown("<div class='main-card'>", unsafe_allow_html=True)
+        st.markdown("""
+            <div class='user-profile'>
+                <img src='https://ui-avatars.com/api/?name={}&background=1f4e79&color=ffffff' class='user-avatar'>
+                <div class='user-info'>
+                    Logged in as <strong>{}</strong><br>
+                    Role: <em>{}</em>
+                </div>
+            </div>
+        """.format(
+            st.session_state.get("login_email", "User"),
+            st.session_state.get("login_email", "User"),
+            st.session_state.get("user_role", "member")
+        ), unsafe_allow_html=True)
+
+    st.markdown("<div class='main-container'>", unsafe_allow_html=True)
     st.title("📊 Price-to-Win Intelligence Suite")
 
-    if selected_tab.endswith("Data Integration"):
-        if st.session_state.is_authenticated:
-            render_data_integration_tab()
-        else:
-            st.warning("🔒 Please log in to access Data Integration.")
+    if selected_tab.endswith("Home"):
+        render_landing_page()
+
+    elif selected_tab.endswith("Data Integration"):
+        render_data_integration_tab()
 
     elif selected_tab.endswith("SAM Vendor Lookup"):
-        if st.session_state.is_authenticated:
-            render_sam_vendor_lookup_tab()
-        else:
-            st.warning("🔒 Please log in to access SAM Vendor Lookup.")
+        render_sam_vendor_lookup_tab()
 
     elif selected_tab.endswith("Manage Subscription"):
-        if st.session_state.is_authenticated:
-            render_stripe_billing_tab()
-        else:
-            st.warning("🔒 Please log in to manage your subscription.")
+        render_stripe_billing_tab()
 
     elif selected_tab.endswith("Admin Dashboard"):
-        if st.session_state.is_authenticated and st.session_state.user_role == "admin":
+        if st.session_state.get("user_role") == "admin":
             render_admin_dashboard_tab()
-        elif st.session_state.is_authenticated:
-            st.warning("⚠️ Admin access required.")
         else:
-            st.warning("🔒 Please log in as admin to access this tab.")
+            st.warning("⚠️ Admin access required.")
 
-    elif selected_tab.endswith("User Login"):
-        render_auth_page()
+    elif selected_tab.endswith("Logout"):
+        if st.button("Confirm Logout"):
+            st.session_state.is_authenticated = False
+            st.session_state.login_email = None
+            st.session_state.user_role = None
+            st.success("✅ Logged out successfully. Please refresh.")
 
     st.markdown("</div>", unsafe_allow_html=True)
 
