@@ -6,7 +6,8 @@ from io import BytesIO
 # Import feature modules
 from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
-from Scripts.streamlit_auth import render_auth_page  # Login/Register
+from Scripts.streamlit_auth import render_auth_page
+from Scripts.stripe_billing_integration import render_stripe_billing_tab
 
 # Page setup
 st.set_page_config(page_title="PTW Win Probability Tool", layout="wide")
@@ -19,6 +20,7 @@ selection = st.sidebar.radio("Go to", [
     "Live PTW Calculator",
     "Data Integration",
     "SAM Vendor Lookup",
+    "Manage Subscription",
     "User Login"
 ])
 
@@ -110,6 +112,10 @@ elif selection == "SAM Vendor Lookup":
         st.warning("🚫 Please log in to access SAM Lookup.")
         st.stop()
     render_sam_vendor_lookup_tab()
+
+# Manage Subscription
+elif selection == "Manage Subscription":
+    render_stripe_billing_tab()
 
 # User Login/Register
 elif selection == "User Login":
