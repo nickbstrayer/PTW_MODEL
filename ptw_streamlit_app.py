@@ -33,7 +33,7 @@ def render_landing_page():
             grid-template-columns: 1fr 1fr;
             padding: 3rem 2rem;
             background-color: #f8f9fb;
-            min-height: 550px;
+            min-height: 600px;
         }
         .hero-text {
             max-width: 600px;
@@ -42,12 +42,23 @@ def render_landing_page():
             font-size: 3rem;
             color: #0f1e45;
             font-weight: 800;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
         .hero p {
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             color: #333;
             line-height: 1.75;
+            margin-bottom: 2rem;
+        }
+        .cta-button {
+            padding: 0.75rem 2rem;
+            background-color: #0f1e45;
+            color: white;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
         }
         .auth-box {
             padding: 2rem;
@@ -87,13 +98,17 @@ def render_landing_page():
             <div class="hero-text">
                 <h1>Price-to-Win Intelligence Suite</h1>
                 <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling, and AI-powered statistical analysis.</p>
+                <button class="cta-button">Get Started</button>
             </div>
+
             <div class="auth-box">
-    """, unsafe_allow_html=True)
-
-    render_auth_page()
-
-    st.markdown("""
+                <h3 style="margin-bottom:1rem;">Register</h3>
+                <input type="text" placeholder="Email address" style="width:100%;padding:0.5rem;margin-bottom:1rem;border-radius:6px;border:1px solid #ccc;">
+                <input type="password" placeholder="Password" style="width:100%;padding:0.5rem;margin-bottom:1rem;border-radius:6px;border:1px solid #ccc;">
+                <button class="cta-button" style="width:100%;margin-bottom:1rem;">Sign up</button>
+                <div style="text-align:center;">
+                    <small>Already have an account? <a href="#" style="color:#0f1e45;font-weight:500;">Log in</a></small>
+                </div>
             </div>
         </div>
 
