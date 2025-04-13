@@ -1,104 +1,92 @@
 import streamlit as st
-
-# Page config
-st.set_page_config(
-    page_title="Price-to-Win Intelligence Suite",
-    page_icon="📊",
-    layout="wide",
-)
-
-# Tabs (import functions)
 from Scripts.streamlit_auth import render_auth_page
 from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
-from Scripts.stripe_billing_integration import render_stripe_billing_tab
 from Scripts.admin_dashboard import render_admin_dashboard_tab
+from Scripts.stripe_billing_integration import render_stripe_billing_tab
 
-# Optional future tabs
+# Optional future imports
 # from Scripts.scenario_comparison import render_scenario_comparison_tab
 # from Scripts.salary_estimator import render_salary_estimator_tab
 # from Scripts.ptw_calculator import render_ptw_calculator_tab
 
-# ----------------------------
-# Session State Defaults
-# ----------------------------
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-if "username" not in st.session_state:
-    st.session_state.username = None
-if "role" not in st.session_state:
-    st.session_state.role = None
+# -----------------------------
+# Streamlit Page Configuration
+# -----------------------------
+st.set_page_config(
+    page_title="Price-to-Win Intelligence Suite",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
 
-# ----------------------------
-# Main App Navigation
-# ----------------------------
+# -----------------------------
+# Session State Initialization
+# -----------------------------
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+if "user_email" not in st.session_state:
+    st.session_state.user_email = None
+if "active_tab" not in st.session_state:
+    st.session_state.active_tab = "User Login"
+
+# -----------------------------
+# Main Navigation UI
+# -----------------------------
 def main_app():
-    st.title("💼 Price-to-Win Intelligence Suite")
+    st.title("Price-to-Win Intelligence Suite")
 
-    menu = [
+    menu_options = [
         "Scenario Comparison",
         "Salary Estimator",
         "Live PTW Calculator",
         "Data Integration",
         "SAM Vendor Lookup",
         "Manage Subscription",
-        "User Login",
+        "User Login"
     ]
 
-    if st.session_state.role == "admin":
-        menu.append("Admin Dashboard")
+    if st.session_state.user_email == "admin":
+        menu_options.insert(-1, "Admin Dashboard")
 
-    choice = st.sidebar.radio("Go to", menu)
+    selected = st.radio("Go to", menu_options, index=menu_options.index(st.session_state.active_tab))
 
-    if choice == "Scenario Comparison":
-        if st.session_state.authenticated:
-            st.subheader("Scenario Comparison")
-            st.info("This section will show PTW scenario analysis.")
-        else:
-            st.warning("⛔ Please log in to access Scenario Comparison.")
+    st.session_state.active_tab = selected
 
-    elif choice == "Salary Estimator":
-        if st.session_state.authenticated:
-            st.subheader("Salary Estimator")
-            st.info("This section will include salary trend predictions.")
-        else:
-            st.warning("⛔ Please log in to access Salary Estimator.")
+    if not st.session_state.logged_in and selected != "User Login":
+        st.warning(f"🚫 Please log in to access {selected}.")
+        return
 
-    elif choice == "Live PTW Calculator":
-        if st.session_state.authenticated:
-            st.subheader("Live PTW Calculator")
-            st.info("This section will provide a real-time PTW tool.")
-        else:
-            st.warning("⛔ Please log in to access PTW Calculator.")
+    # -----------------------------
+    # Render Page Based on Selection
+    # -----------------------------
+    if selected == "Scenario Comparison":
+        st.info("Scenario Comparison will go here.")
+        # render_scenario_comparison_tab()
 
-    elif choice == "Data Integration":
-        if st.session_state.authenticated:
-            render_data_integration_tab()
-        else:
-            st.warning("⛔ Please log in to access Data Integration.")
+    elif selected == "Salary Estimator":
+        st.info("Salary Estimator will go here.")
+        # render_salary_estimator_tab()
 
-    elif choice == "SAM Vendor Lookup":
-        if st.session_state.authenticated:
-            render_sam_vendor_lookup_tab()
-        else:
-            st.warning("⛔ Please log in to access SAM Lookup.")
+    elif selected == "Live PTW Calculator":
+        st.info("PTW Calculator will go here.")
+        # render_ptw_calculator_tab()
 
-    elif choice == "Manage Subscription":
-        if st.session_state.authenticated:
-            render_stripe_billing_tab()
-        else:
-            st.warning("⛔ Please log in to access billing.")
+    elif selected == "Data Integration":
+        render_data_integration_tab()
 
-    elif choice == "User Login":
+    elif selected == "SAM Vendor Lookup":
+        render_sam_vendor_lookup_tab()
+
+    elif selected == "Manage Subscription":
+        render_stripe_billing_tab()
+
+    elif selected == "Admin Dashboard":
+        render_admin_dashboard_tab()
+
+    elif selected == "User Login":
         render_auth_page()
 
-    elif choice == "Admin Dashboard":
-        if st.session_state.role == "admin":
-            render_admin_dashboard_tab()
-        else:
-            st.warning("⛔ Admin access only.")
-
-# ----------------------------
-# Start App
-# ----------------------------
+# -----------------------------
+# Launch App
+# -----------------------------
 main_app()
