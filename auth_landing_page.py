@@ -46,7 +46,7 @@ def render_landing_page():
             background-color: white;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
         </style>
     """, unsafe_allow_html=True)
@@ -62,11 +62,11 @@ def render_landing_page():
         </div>
     """, unsafe_allow_html=True)
 
-    # Hero Section + Login/Register
-    col1, col2 = st.columns([1.5, 1])
+    # Hero + Registration Split
+    left, right = st.columns([1.3, 1])
 
-    with col1:
-        st.markdown("### Price-to-Win Intelligence Suite")
+    with left:
+        st.markdown("## Price-to-Win Intelligence Suite")
         st.markdown("""
             Optimize your federal contracting strategy with data-driven insights and real-time market analysis
             using scenario-based modeling, and AI-powered statistical analysis.
@@ -75,10 +75,10 @@ def render_landing_page():
             st.session_state.page = "auth"
             st.rerun()
 
-    with col2:
+    with right:
         with st.container():
-            st.markdown('<div class="card">', unsafe_allow_html=True)
-            st.markdown("### Register" if st.session_state.get("show_register", True) else "### Log In")
+            st.markdown("<div class='card'>", unsafe_allow_html=True)
+            st.subheader("Register" if st.session_state.get("show_register", True) else "Log In")
             login_email = st.text_input("Email address", key="email_input_landing")
             login_password = st.text_input("Password", type="password", key="password_input_landing")
 
@@ -113,8 +113,7 @@ def render_landing_page():
             if st.button(toggle_text):
                 st.session_state.show_register = not st.session_state.get("show_register", True)
                 st.rerun()
-
-            st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
 def main_app():
     initialize_session_state()
