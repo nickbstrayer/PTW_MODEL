@@ -36,18 +36,18 @@ def render_landing_page():
             min-height: 550px;
         }
         .hero-text {
-            max-width: 500px;
+            max-width: 600px;
         }
         .hero h1 {
-            font-size: 2.8rem;
+            font-size: 3rem;
             color: #0f1e45;
             font-weight: 800;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
         }
         .hero p {
-            font-size: 1.1rem;
+            font-size: 1.15rem;
             color: #333;
-            line-height: 1.6;
+            line-height: 1.75;
         }
         .auth-box {
             padding: 2rem;
@@ -66,7 +66,7 @@ def render_landing_page():
             background: white;
             box-shadow: 0 0 8px rgba(0,0,0,0.03);
         }
-        .video-placeholder, .screenshot-placeholder {
+        .screenshot-placeholder {
             width: 90%;
             max-width: 800px;
             border-radius: 12px;
@@ -86,7 +86,7 @@ def render_landing_page():
         <div class="hero">
             <div class="hero-text">
                 <h1>Price-to-Win Intelligence Suite</h1>
-                <p>Maximize your federal contracting success with data-driven insights and real-time market analysis.</p>
+                <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling, and AI-powered statistical analysis.</p>
             </div>
             <div class="auth-box">
     """, unsafe_allow_html=True)
