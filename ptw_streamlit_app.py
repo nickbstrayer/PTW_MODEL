@@ -6,7 +6,7 @@ from io import BytesIO
 # Import feature modules
 from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
-from Scripts.streamlit_auth import render_auth_page  # ✅ New: User Login & Register
+from Scripts.streamlit_auth import render_auth_page  # Login/Register
 
 # Page setup
 st.set_page_config(page_title="PTW Win Probability Tool", layout="wide")
@@ -19,11 +19,14 @@ selection = st.sidebar.radio("Go to", [
     "Live PTW Calculator",
     "Data Integration",
     "SAM Vendor Lookup",
-    "User Login"  # ✅ Added
+    "User Login"
 ])
 
-# Page logic
+# Scenario Comparison
 if selection == "Scenario Comparison":
+    if "user" not in st.session_state or not st.session_state.user:
+        st.warning("🚫 Please log in to access Scenario Comparison.")
+        st.stop()
     st.subheader("Scenario-Based Rate Modeling")
     file = st.file_uploader("Upload Excel File", type=["xlsx"])
     if file:
@@ -34,7 +37,11 @@ if selection == "Scenario Comparison":
             df.to_excel(writer, index=False, sheet_name='PTW_Scenarios')
         st.download_button("Download Scenario Report", output.getvalue(), file_name="PTW_Scenario_Export.xlsx")
 
+# Salary Estimator
 elif selection == "Salary Estimator":
+    if "user" not in st.session_state or not st.session_state.user:
+        st.warning("🚫 Please log in to access Salary Estimator.")
+        st.stop()
     st.header("AI-Powered Salary Estimator")
     try:
         model, feature_cols = joblib.load("salary_estimator_model.pkl")
@@ -64,7 +71,11 @@ elif selection == "Salary Estimator":
     except Exception as e:
         st.error("Model could not be loaded or input structure mismatch.")
 
+# Live PTW Calculator
 elif selection == "Live PTW Calculator":
+    if "user" not in st.session_state or not st.session_state.user:
+        st.warning("🚫 Please log in to use the PTW Calculator.")
+        st.stop()
     st.subheader("Live PTW Rate Evaluation")
     proposed_rate = st.number_input("Proposed Bill Rate ($/hr)", value=100.00)
     evaluation_type = st.selectbox("Evaluation Type", ["LPTA", "Best Value"])
@@ -86,11 +97,20 @@ elif selection == "Live PTW Calculator":
     st.metric(label="Adjusted Rate ($/hr)", value=f"${adjusted_rate:.2f}")
     st.metric(label="Win Probability (%)", value=f"{int(win_prob * 100)}%")
 
+# Data Integration
 elif selection == "Data Integration":
+    if "user" not in st.session_state or not st.session_state.user:
+        st.warning("🚫 Please log in to access Data Integration.")
+        st.stop()
     render_data_integration_tab()
 
+# SAM Vendor Lookup
 elif selection == "SAM Vendor Lookup":
+    if "user" not in st.session_state or not st.session_state.user:
+        st.warning("🚫 Please log in to access SAM Lookup.")
+        st.stop()
     render_sam_vendor_lookup_tab()
 
-elif selection == "User Login":  # ✅ New route
+# User Login/Register
+elif selection == "User Login":
     render_auth_page()
