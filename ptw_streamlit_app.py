@@ -26,11 +26,17 @@ def render_landing_page():
             font-size: 1.25rem;
             font-weight: 600;
         }
-        .nav-links a {
-            margin-left: 1.5rem;
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+        .nav-links button {
+            background: none;
+            border: none;
             color: white;
-            text-decoration: none;
             font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
         }
         .cta-button {
             padding: 0.75rem 2rem;
@@ -58,18 +64,29 @@ def render_landing_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # Top navigation
-    st.markdown("""
-        <div class="top-nav">
-            <div>PTW Intelligence Suite</div>
-            <div class="nav-links">
-                <a href="#" onclick="window.location.href='?page=auth'">Log in</a>
-                <a href="#" onclick="window.location.href='?page=auth'">Register</a>
+    col1, col2 = st.columns([1, 1])
+    with col1:
+        st.markdown("""
+            <div class="top-nav">
+                <div>PTW Intelligence Suite</div>
+                <div class="nav-links">
+                    <form action="" method="post">
+                        <button name="login" type="submit">Log in</button>
+                        <button name="register" type="submit">Register</button>
+                    </form>
+                </div>
             </div>
-        </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-    # Hero + Register Split
+    if "login" in st.session_state:
+        st.session_state.page = "auth"
+        st.session_state.show_register = False
+        st.rerun()
+    if "register" in st.session_state:
+        st.session_state.page = "auth"
+        st.session_state.show_register = True
+        st.rerun()
+
     left_col, right_col = st.columns([1.3, 1])
 
     with left_col:
