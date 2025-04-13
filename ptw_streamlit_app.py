@@ -27,17 +27,11 @@ def render_landing_page():
             font-weight: 600;
             width: 100%;
         }
-        .nav-links {
-            display: flex;
-        }
-        .nav-links button {
+        .nav-links a {
             margin-left: 1.5rem;
-            background: none;
-            border: none;
             color: white;
+            text-decoration: none;
             font-weight: 500;
-            cursor: pointer;
-            font-size: 1.1rem;
         }
         .cta-button {
             padding: 0.75rem 2rem;
@@ -58,20 +52,19 @@ def render_landing_page():
         </style>
     """, unsafe_allow_html=True)
 
-    col1, col2 = st.columns([1, 1])
-
-    with col1:
-        st.markdown("""
-            <div class="top-nav">
-                <div>PTW Intelligence Suite</div>
-                <div class="nav-links">
-                    <button onclick="window.location.reload();">Home</button>
-                    <button onclick="window.location.hash='auth'">Log in</button>
-                    <button onclick="window.location.hash='auth'">Register</button>
-                </div>
+    st.markdown("""
+        <div class="top-nav">
+            <div>PTW Intelligence Suite</div>
+            <div class="nav-links">
+                <a href="#" onclick="window.location.hash='auth';window.location.reload();">Log in</a>
+                <a href="#" onclick="window.location.hash='auth';window.location.reload();">Register</a>
             </div>
-        """, unsafe_allow_html=True)
+        </div>
+    """, unsafe_allow_html=True)
 
+    left_col, right_col = st.columns([1.3, 1])
+
+    with left_col:
         st.markdown("## Price-to-Win Intelligence Suite")
         st.markdown("""
             Turn data into decisions.  
@@ -82,7 +75,7 @@ def render_landing_page():
             st.session_state.page = "auth"
             st.rerun()
 
-    with col2:
+    with right_col:
         with st.container():
             st.markdown("<div class='card'>", unsafe_allow_html=True)
             st.subheader("Register" if st.session_state.get("show_register", True) else "Log In")
