@@ -56,26 +56,19 @@ def render_landing_page():
     """, unsafe_allow_html=True)
 
     # Header Navigation
-    st.markdown("""
-        <div class="top-nav">
-            <div>PTW Intelligence Suite</div>
-            <div class="nav-links">
-                <form action="" method="post">
-                    <button type="submit" name="log_in">Log in</button>
-                    <button type="submit" name="register">Register</button>
-                </form>
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
-
-    if "log_in" in st.session_state:
-        st.session_state.page = "auth"
-        st.session_state.show_register = False
-        st.rerun()
-    if "register" in st.session_state:
-        st.session_state.page = "auth"
-        st.session_state.show_register = True
-        st.rerun()
+    col1, col2, col3 = st.columns([6, 1, 1])
+    with col1:
+        st.markdown("<div class='top-nav'>PTW Intelligence Suite</div>", unsafe_allow_html=True)
+    with col2:
+        if st.button("Log in"):
+            st.session_state.page = "auth"
+            st.session_state.show_register = False
+            st.rerun()
+    with col3:
+        if st.button("Register"):
+            st.session_state.page = "auth"
+            st.session_state.show_register = True
+            st.rerun()
 
     left_col, right_col = st.columns([1.3, 1])
 
