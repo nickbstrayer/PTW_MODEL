@@ -1,64 +1,34 @@
 import streamlit as st
-import hashlib
-import json
-from pathlib import Path
 
-# Path to mock user database (stored in the same directory)
-USER_DB = Path("users.json")
+# Hardcoded user credentials for now
+VALID_USERS = {
+    "admin": {"password": "admin123", "role": "admin"},
+    "nick": {"password": "maasai123", "role": "user"}
+}
 
-# Load existing user accounts
-def load_users():
-    if USER_DB.exists():
-        with open(USER_DB, "r") as f:
-            return json.load(f)
-    return {}
+def authenticate_user(username, password):
+    user = VALID_USERS.get(username)
+    if user and user["password"] == password:
+        return user["role"]
+    return None
 
-# Save user accounts
-def save_users(users):
-    with open(USER_DB, "w") as f:
-        json.dump(users, f, indent=2)
+def login_form():
+    st.markdown("## 🔐 PTW Intelligence Suite")
+    auth_mode = st.radio("Choose Option", ["Login", "Register"])
 
-# Secure hash function for passwords
-def hash_password(password):
-    return hashlib.sha256(password.encode()).hexdigest()
-
-# Main Login/Register UI tab
-def render_auth_page():
-    st.title("🔐 PTW Intelligence Suite")
-
-    tab = st.radio("Choose Option", ["Login", "Register"])
-    users = load_users()
-
-    if tab == "Register":
-        st.subheader("Create a New Account")
-        email = st.text_input("Email", key="reg_email")
-        password = st.text_input("Password", type="password", key="reg_pass")
-        confirm = st.text_input("Confirm Password", type="password", key="reg_pass2")
-
-        if st.button("Register"):
-            if not email or not password or not confirm:
-                st.warning("Please fill in all fields.")
-            elif password != confirm:
-                st.error("Passwords do not match.")
-            elif email in users:
-                st.error("An account with this email already exists.")
-            else:
-                users[email] = hash_password(password)
-                save_users(users)
-                st.success("Registration successful! Please log in.")
-
-    elif tab == "Login":
-        st.subheader("Sign In to Your Account")
-        email = st.text_input("Email", key="login_email")
+    if auth_mode == "Login":
+        username = st.text_input("Email", key="login_email")
         password = st.text_input("Password", type="password", key="login_pass")
 
         if st.button("Login"):
-            if email in users and users[email] == hash_password(password):
-                st.session_state["user"] = email
-                st.success(f"Welcome back, {email}!")
+            role = authenticate_user(username, password)
+            if role:
+                st.session_state["logged_in"] = True
+                st.session_state["user_role"] = role
+                st.session_state["username"] = username
+                st.rerun()
             else:
                 st.error("Invalid email or password.")
 
-    # Optional display of current user
-    if "user" in st.session_state:
-        st.info(f"🔓 Logged in as: {st.session_state['user']}")
+    elif auth_mode == "Register":
+        st.info("🚧 Registration is currently disabled in this demo.")
