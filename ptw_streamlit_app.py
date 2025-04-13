@@ -12,20 +12,10 @@ st.set_page_config(
 )
 
 def render_landing_page():
-    if "show_register" not in st.session_state:
-        st.session_state.show_register = True
-    if "is_authenticated" not in st.session_state:
-        st.session_state.is_authenticated = False
-    if "user_role" not in st.session_state:
-        st.session_state.user_role = ""
-    if "page" not in st.session_state:
-        st.session_state.page = "landing"
+    initialize_session_state()
 
     st.markdown("""
         <style>
-        body {
-            font-family: 'Segoe UI', sans-serif;
-        }
         .top-nav {
             display: flex;
             justify-content: space-between;
@@ -106,47 +96,48 @@ def render_landing_page():
                 <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling, and AI-powered statistical analysis.</p>
                 <button class="cta-button" onClick="window.location.reload();">Get Started</button>
             </div>
+            <div class="auth-box">
     """, unsafe_allow_html=True)
 
-    with st.container():
-        st.markdown("""<div class="auth-box">""", unsafe_allow_html=True)
-        st.subheader("Register" if st.session_state.show_register else "Log In")
-        email = st.text_input("Email address", key="login_email")
-        password = st.text_input("Password", type="password", key="login_password")
+    st.subheader("Register" if st.session_state.show_register else "Log In")
+    email = st.text_input("Email address", value=st.session_state.login_email, key="landing_email")
+    password = st.text_input("Password", type="password", value=st.session_state.login_password, key="landing_pw")
 
-        if st.session_state.show_register:
-            if st.button("Sign up"):
+    if st.session_state.show_register:
+        if st.button("Sign up"):
+            st.session_state.is_authenticated = True
+            st.session_state.user_role = "member"
+            st.session_state.login_email = email
+            st.success("✅ Registered and logged in.")
+            st.session_state.page = "main"
+            st.rerun()
+    else:
+        if st.button("Log In"):
+            if email == "admin" and password == "admin123":
+                st.session_state.is_authenticated = True
+                st.session_state.user_role = "admin"
+                st.success("✅ Welcome Admin!")
+                st.session_state.page = "main"
+                st.session_state.login_email = email
+                st.rerun()
+            elif email and password:
                 st.session_state.is_authenticated = True
                 st.session_state.user_role = "member"
+                st.success("✅ Welcome back!")
                 st.session_state.page = "main"
-                st.success("✅ Registered and logged in.")
+                st.session_state.login_email = email
                 st.rerun()
-        else:
-            if st.button("Log In"):
-                if email == "admin" and password == "admin123":
-                    st.session_state.is_authenticated = True
-                    st.session_state.user_role = "admin"
-                    st.session_state.page = "main"
-                    st.success("✅ Welcome Admin!")
-                    st.rerun()
-                elif email and password:
-                    st.session_state.is_authenticated = True
-                    st.session_state.user_role = "member"
-                    st.session_state.page = "main"
-                    st.success("✅ Welcome back!")
-                    st.rerun()
-                else:
-                    st.error("Invalid credentials.")
+            else:
+                st.error("Invalid credentials.")
 
-        toggle_text = "Already have an account? Log in" if st.session_state.show_register else "Don't have an account? Register"
-        if st.button(toggle_text):
-            st.session_state.show_register = not st.session_state.show_register
-            st.rerun()
+    toggle_text = "Already have an account? Log in" if st.session_state.show_register else "Don't have an account? Register"
+    if st.button(toggle_text):
+        st.session_state.show_register = not st.session_state.show_register
+        st.rerun()
 
-        st.markdown("""</div>""", unsafe_allow_html=True)
+    st.markdown("""</div></div>""", unsafe_allow_html=True)
 
     st.markdown("""
-        </div>
         <div class="media-preview">
             <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png" class="screenshot-placeholder">
         </div>
