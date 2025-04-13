@@ -14,6 +14,8 @@ st.set_page_config(
 def render_landing_page():
     initialize_session_state()
 
+    show_register = st.session_state.get("show_register", True)
+
     st.markdown("""
         <style>
         body {
@@ -38,6 +40,7 @@ def render_landing_page():
         .hero {
             display: grid;
             grid-template-columns: 1fr 1fr;
+            gap: 3rem;
             padding: 3rem 2rem;
             background-color: #f8f9fb;
             align-items: center;
@@ -71,18 +74,6 @@ def render_landing_page():
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
             max-width: 450px;
         }
-        .media-preview {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 3rem 2rem;
-            background: white;
-        }
-        .screenshot-placeholder {
-            width: 90%;
-            max-width: 800px;
-            border-radius: 12px;
-        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -101,19 +92,19 @@ def render_landing_page():
                 <button class="cta-button" onClick="window.location.reload();">Get Started</button>
             </div>
             <div class="auth-box">
-                <h3>{"Register" if st.session_state.get("show_register", True) else "Log In"}</h3>
+                <h3>{"Register" if show_register else "Log In"}</h3>
     """, unsafe_allow_html=True)
 
     login_email = st.text_input("Email address", key="email_input_landing")
     login_password = st.text_input("Password", type="password", key="password_input_landing")
 
-    if st.session_state.get("show_register", True):
+    if show_register:
         if st.button("Sign up"):
             st.session_state.is_authenticated = True
             st.session_state.user_role = "member"
             st.session_state.login_email = login_email
-            st.success("✅ Registered and logged in.")
             st.session_state.page = "main"
+            st.success("✅ Registered and logged in.")
             st.rerun()
     else:
         if st.button("Log In"):
@@ -121,31 +112,25 @@ def render_landing_page():
                 st.session_state.is_authenticated = True
                 st.session_state.user_role = "admin"
                 st.session_state.login_email = login_email
-                st.success("✅ Welcome Admin!")
                 st.session_state.page = "main"
+                st.success("✅ Welcome Admin!")
                 st.rerun()
             elif login_email and login_password:
                 st.session_state.is_authenticated = True
                 st.session_state.user_role = "member"
                 st.session_state.login_email = login_email
-                st.success("✅ Welcome back!")
                 st.session_state.page = "main"
+                st.success("✅ Welcome back!")
                 st.rerun()
             else:
                 st.error("Invalid credentials.")
 
-    toggle_text = "Already have an account? Log in" if st.session_state.get("show_register", True) else "Don't have an account? Register"
+    toggle_text = "Already have an account? Log in" if show_register else "Don't have an account? Register"
     if st.button(toggle_text):
-        st.session_state.show_register = not st.session_state.get("show_register", True)
+        st.session_state.show_register = not show_register
         st.rerun()
 
-    st.markdown("""
-            </div>
-        </div>
-        <div class="media-preview">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png" class="screenshot-placeholder">
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("</div></div>", unsafe_allow_html=True)
 
 def main_app():
     initialize_session_state()
