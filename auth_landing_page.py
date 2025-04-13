@@ -1,5 +1,5 @@
 import streamlit as st
-from Scripts.streamlit_auth import render_auth_page, initialize_session_state
+from Scripts.streamlit_auth import initialize_session_state
 from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
 from Scripts.stripe_billing_integration import render_stripe_billing_tab
@@ -14,6 +14,7 @@ st.set_page_config(
 def render_landing_page():
     initialize_session_state()
 
+    # Set UI styles
     st.markdown("""
         <style>
         .top-nav {
@@ -45,13 +46,13 @@ def render_landing_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # Top navigation
+    # Top Navigation
     st.markdown("""
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
             <div class="nav-links">
-                <a href="?page=auth">Log in</a>
-                <a href="?page=auth">Register</a>
+                <a href="#auth-box">Log in</a>
+                <a href="#auth-box">Register</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -66,10 +67,10 @@ def render_landing_page():
             using scenario-based modeling, and AI-powered statistical analysis.
         """)
         if st.button("Get Started"):
-            st.session_state.page = "auth"
-            st.rerun()
+            st.markdown("<a href='#auth-box'></a>", unsafe_allow_html=True)
 
     with right:
+        st.markdown("<div id='auth-box'></div>", unsafe_allow_html=True)
         st.markdown("### Register" if st.session_state.get("show_register", True) else "### Log In")
         login_email = st.text_input("Email address", key="email_input_landing")
         login_password = st.text_input("Password", type="password", key="password_input_landing")
@@ -113,6 +114,7 @@ def main_app():
         render_landing_page()
         return
 
+    # Sidebar navigation for logged-in users
     with st.sidebar:
         st.image("https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png", width=140)
         st.title("📘 Navigation")
