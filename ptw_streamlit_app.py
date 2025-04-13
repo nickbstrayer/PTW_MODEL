@@ -25,12 +25,19 @@ def render_landing_page():
             color: white;
             font-size: 1.25rem;
             font-weight: 600;
+            width: 100%;
         }
-        .nav-links a {
+        .nav-links {
+            display: flex;
+        }
+        .nav-links button {
             margin-left: 1.5rem;
+            background: none;
+            border: none;
             color: white;
-            text-decoration: none;
             font-weight: 500;
+            cursor: pointer;
+            font-size: 1.1rem;
         }
         .cta-button {
             padding: 0.75rem 2rem;
@@ -48,31 +55,23 @@ def render_landing_page():
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-        .auth-banner {
-            background-color: #f4f8ff;
-            padding: 2rem;
-            margin-top: 2rem;
-            border-top: 4px solid #007aff;
-            border-radius: 10px;
-        }
         </style>
     """, unsafe_allow_html=True)
 
-    # Top navigation
-    st.markdown("""
-        <div class="top-nav">
-            <div>PTW Intelligence Suite</div>
-            <div class="nav-links">
-                <a href="?page=auth">Log in</a>
-                <a href="?page=auth">Register</a>
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        st.markdown("""
+            <div class="top-nav">
+                <div>PTW Intelligence Suite</div>
+                <div class="nav-links">
+                    <button onclick="window.location.reload();">Home</button>
+                    <button onclick="window.location.hash='auth'">Log in</button>
+                    <button onclick="window.location.hash='auth'">Register</button>
+                </div>
             </div>
-        </div>
-    """, unsafe_allow_html=True)
+        """, unsafe_allow_html=True)
 
-    # Hero + Register Split
-    left_col, right_col = st.columns([1.3, 1])
-
-    with left_col:
         st.markdown("## Price-to-Win Intelligence Suite")
         st.markdown("""
             Turn data into decisions.  
@@ -83,7 +82,7 @@ def render_landing_page():
             st.session_state.page = "auth"
             st.rerun()
 
-    with right_col:
+    with col2:
         with st.container():
             st.markdown("<div class='card'>", unsafe_allow_html=True)
             st.subheader("Register" if st.session_state.get("show_register", True) else "Log In")
@@ -130,12 +129,8 @@ def render_landing_page():
 def main_app():
     initialize_session_state()
 
-    if not st.session_state.get("is_authenticated"):
+    if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
         render_landing_page()
-        return
-
-    if st.session_state.get("page") == "auth":
-        render_auth_page()
         return
 
     with st.sidebar:
@@ -146,12 +141,10 @@ def main_app():
             "📈 Data Integration",
             "🔍 SAM Vendor Lookup",
             "💳 Manage Subscription",
-            "🛠️ Admin Dashboard" if st.session_state.get("user_role") == "admin" else None,
+            "🛠️ Admin Dashboard",
             "🔐 Logout",
         ]
-        tabs = [tab for tab in tabs if tab]  # remove None
         selected_tab = st.radio("Select a section:", tabs)
-
         st.markdown(f"""
             <div style='margin-top:2rem;'>
                 <strong>Logged in as:</strong> {st.session_state.get("login_email", "User")}<br>
@@ -171,14 +164,16 @@ def main_app():
     elif selected_tab.endswith("Manage Subscription"):
         render_stripe_billing_tab()
     elif selected_tab.endswith("Admin Dashboard"):
-        render_admin_dashboard_tab()
+        if st.session_state.get("user_role") == "admin":
+            render_admin_dashboard_tab()
+        else:
+            st.warning("⚠️ Admin access required.")
     elif selected_tab.endswith("Logout"):
         st.session_state.is_authenticated = False
         st.session_state.login_email = None
         st.session_state.user_role = None
         st.session_state.page = "landing"
-        st.success("✅ Logged out successfully.")
-        st.rerun()
+        st.success("✅ Logged out successfully. Please refresh.")
 
 if __name__ == "__main__":
     main_app()
