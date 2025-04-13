@@ -43,7 +43,6 @@ def render_landing_page():
         .hero {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 2rem;
             padding: 3rem 2rem;
             background-color: #f8f9fb;
         }
@@ -74,12 +73,23 @@ def render_landing_page():
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
-            max-width: 100%;
+            max-width: 450px;
+        }
+        .media-preview {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem 2rem;
+            background: white;
+        }
+        .screenshot-placeholder {
+            width: 90%;
+            max-width: 800px;
+            border-radius: 12px;
         }
         </style>
     """, unsafe_allow_html=True)
 
-    # Navigation Bar
     st.markdown(f"""
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
@@ -88,20 +98,15 @@ def render_landing_page():
                 <a href="#" onClick="window.location.reload();">Register</a>
             </div>
         </div>
-    """, unsafe_allow_html=True)
-
-    # Main hero + form layout
-    col1, col2 = st.columns([2, 1])
-    with col1:
-        st.markdown("""
+        <div class="hero">
             <div class="hero-text">
                 <h1>Price-to-Win Intelligence Suite</h1>
                 <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling, and AI-powered statistical analysis.</p>
                 <button class="cta-button" onClick="window.location.reload();">Get Started</button>
             </div>
-        """, unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    with col2:
+    with st.container():
         st.markdown("""<div class="auth-box">""", unsafe_allow_html=True)
         st.subheader("Register" if st.session_state.show_register else "Log In")
         st.session_state.login_email = st.text_input("Email address", value=st.session_state.login_email, key="email_input_landing")
@@ -112,33 +117,43 @@ def render_landing_page():
                 st.session_state.is_authenticated = True
                 st.session_state.user_role = "member"
                 st.success("✅ Registered and logged in.")
-                st.experimental_rerun()
+                st.session_state.page = "main"
+                st.rerun()
         else:
             if st.button("Log In"):
                 if st.session_state.login_email == "admin" and st.session_state.login_password == "admin123":
                     st.session_state.is_authenticated = True
                     st.session_state.user_role = "admin"
                     st.success("✅ Welcome Admin!")
-                    st.experimental_rerun()
+                    st.session_state.page = "main"
+                    st.rerun()
                 elif st.session_state.login_email and st.session_state.login_password:
                     st.session_state.is_authenticated = True
                     st.session_state.user_role = "member"
                     st.success("✅ Welcome back!")
-                    st.experimental_rerun()
+                    st.session_state.page = "main"
+                    st.rerun()
                 else:
                     st.error("Invalid credentials.")
 
         toggle_text = "Already have an account? Log in" if st.session_state.show_register else "Don't have an account? Register"
         if st.button(toggle_text):
             st.session_state.show_register = not st.session_state.show_register
-            st.experimental_rerun()
+            st.rerun()
 
         st.markdown("""</div>""", unsafe_allow_html=True)
+
+    st.markdown("""
+        </div>
+        <div class="media-preview">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png" class="screenshot-placeholder">
+        </div>
+    """, unsafe_allow_html=True)
 
 def main_app():
     initialize_session_state()
 
-    if not st.session_state.get("is_authenticated"):
+    if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
         render_landing_page()
         return
 
@@ -181,6 +196,7 @@ def main_app():
         st.session_state.is_authenticated = False
         st.session_state.login_email = None
         st.session_state.user_role = None
+        st.session_state.page = "landing"
         st.success("✅ Logged out successfully. Please refresh.")
 
 if __name__ == "__main__":
