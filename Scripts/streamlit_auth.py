@@ -1,36 +1,37 @@
 import streamlit as st
 
-# Hardcoded credentials for now (will move to secure storage later)
-VALID_USERS = {
+# Hardcoded users for now
+USERS = {
     "admin": {"password": "admin123", "role": "admin"},
-    "nick": {"password": "maasai123", "role": "user"}
+    "nick": {"password": "maasai123", "role": "user"},
 }
-
-def authenticate_user(username, password):
-    user = VALID_USERS.get(username)
-    if user and user["password"] == password:
-        return user["role"]
-    return None
 
 def render_auth_page():
     st.markdown("## 🔐 PTW Intelligence Suite")
-    st.markdown("### Sign In to Your Account")
-
-    auth_mode = st.radio("Choose Option", ["Login", "Register"])
+    auth_mode = st.radio("Choose Option", ["Login", "Register"], horizontal=True)
 
     if auth_mode == "Login":
-        username = st.text_input("Email", key="login_email")
-        password = st.text_input("Password", type="password", key="login_password")
-
-        if st.button("Login"):
-            role = authenticate_user(username, password)
-            if role:
-                st.session_state["logged_in"] = True
-                st.session_state["user_role"] = role
-                st.session_state["username"] = username
-                st.rerun()
-            else:
-                st.error("Invalid email or password.")
-
+        login()
     elif auth_mode == "Register":
-        st.info("🚧 Registration coming soon. Contact admin to request access.")
+        register()
+
+
+def login():
+    st.subheader("Sign In to Your Account")
+    username = st.text_input("Email", key="login_email")
+    password = st.text_input("Password", type="password", key="login_password")
+
+    if st.button("Login"):
+        user = USERS.get(username)
+        if user and user["password"] == password:
+            st.session_state.authenticated = True
+            st.session_state.username = username
+            st.session_state.role = user["role"]
+            st.experimental_rerun()
+        else:
+            st.error("Invalid email or password.")
+
+
+def register():
+    st.subheader("Create a New Account (Disabled for now)")
+    st.info("Registration will be enabled in a future update.")
