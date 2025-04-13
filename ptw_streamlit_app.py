@@ -36,13 +36,12 @@ def render_landing_page():
             font-weight: 500;
         }
         .hero {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
             padding: 3rem 2rem;
             background-color: #f8f9fb;
-        }
-        .hero-text {
-            max-width: 50%;
+            align-items: start;
         }
         .hero-text h1 {
             font-size: 3rem;
@@ -71,7 +70,7 @@ def render_landing_page():
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
-            max-width: 400px;
+            width: 100%;
         }
         </style>
     """, unsafe_allow_html=True)
@@ -91,6 +90,7 @@ def render_landing_page():
                 <button class="cta-button" onclick="window.location.href='?page=auth'">Get Started</button>
             </div>
             <div class="auth-box">
+                <h3>{"Register" if st.session_state.get("show_register", True) else "Log In"}</h3>
     """, unsafe_allow_html=True)
 
     login_email = st.text_input("Email address", key="email_input_landing")
