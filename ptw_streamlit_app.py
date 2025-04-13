@@ -60,8 +60,8 @@ def render_landing_page():
         <div class='top-nav'>
             <div>PTW Intelligence Suite</div>
             <div class='nav-links'>
-                <a href='/?page=auth&mode=login'>Log in</a>
-                <a href='/?page=auth&mode=register'>Register</a>
+                <a href='/?mode=login'>Log in</a>
+                <a href='/?mode=register'>Register</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -76,19 +76,18 @@ def render_landing_page():
             Welcome to PTW Intelligence Suite.
         """)
         if st.button("Get Started", key="hero_button"):
-            st.session_state.page = "auth"
-            st.session_state.show_register = True
+            st.query_params["mode"] = "register"
             st.rerun()
 
     with right_col:
         with st.container():
             st.markdown("<div class='card'>", unsafe_allow_html=True)
-            st.subheader("Register" if st.session_state.get("show_register", True) else "Log In")
+            st.subheader("Register" if st.query_params.get("mode") == "register" else "Log In")
 
             login_email = st.text_input("Email address", key="email_input_landing")
             login_password = st.text_input("Password", type="password", key="password_input_landing")
 
-            if st.session_state.get("show_register", True):
+            if st.query_params.get("mode") == "register":
                 st.info("Create a new account to access the PTW Intelligence Suite.")
                 if st.button("Sign up"):
                     st.session_state.is_authenticated = True
@@ -117,9 +116,10 @@ def render_landing_page():
                     else:
                         st.error("Invalid credentials.")
 
-            toggle_text = "Already have an account? Log in" if st.session_state.get("show_register", True) else "Don't have an account? Register"
+            toggle_text = "Already have an account? Log in" if st.query_params.get("mode") == "register" else "Don't have an account? Register"
             if st.button(toggle_text):
-                st.session_state.show_register = not st.session_state.get("show_register", True)
+                new_mode = "login" if st.query_params.get("mode") == "register" else "register"
+                st.query_params["mode"] = new_mode
                 st.rerun()
 
             st.markdown("</div>", unsafe_allow_html=True)
@@ -127,12 +127,10 @@ def render_landing_page():
 def main_app():
     initialize_session_state()
 
-    query_params = st.query_params
-    if query_params.get("page") == "auth":
-        st.session_state.page = "auth"
-        st.session_state.show_register = query_params.get("mode") == "register"
-
+    mode = st.query_params.get("mode")
     if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
+        if mode in ["login", "register"]:
+            st.session_state.page = "auth"
         render_landing_page()
         return
 
