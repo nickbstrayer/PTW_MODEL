@@ -27,11 +27,14 @@ def render_landing_page():
             font-weight: 600;
             width: 100%;
         }
-        .nav-links a {
+        .nav-links button {
             margin-left: 1.5rem;
+            background: none;
+            border: none;
             color: white;
-            text-decoration: none;
             font-weight: 500;
+            font-size: 1rem;
+            cursor: pointer;
         }
         .cta-button {
             padding: 0.75rem 2rem;
@@ -52,15 +55,27 @@ def render_landing_page():
         </style>
     """, unsafe_allow_html=True)
 
+    # Header Navigation
     st.markdown("""
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
             <div class="nav-links">
-                <a href="#" onclick="window.location.hash='auth';window.location.reload();">Log in</a>
-                <a href="#" onclick="window.location.hash='auth';window.location.reload();">Register</a>
+                <form action="" method="post">
+                    <button type="submit" name="log_in">Log in</button>
+                    <button type="submit" name="register">Register</button>
+                </form>
             </div>
         </div>
     """, unsafe_allow_html=True)
+
+    if "log_in" in st.session_state:
+        st.session_state.page = "auth"
+        st.session_state.show_register = False
+        st.rerun()
+    if "register" in st.session_state:
+        st.session_state.page = "auth"
+        st.session_state.show_register = True
+        st.rerun()
 
     left_col, right_col = st.columns([1.3, 1])
 
@@ -73,6 +88,7 @@ def render_landing_page():
         """)
         if st.button("Get Started", key="hero_button"):
             st.session_state.page = "auth"
+            st.session_state.show_register = True
             st.rerun()
 
     with right_col:
