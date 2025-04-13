@@ -27,8 +27,11 @@ def render_landing_page():
             font-weight: 600;
             width: 100%;
         }
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
         .nav-links button {
-            margin-left: 1.5rem;
             background: none;
             border: none;
             color: white;
@@ -55,20 +58,17 @@ def render_landing_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # Header Navigation
-    col1, col2, col3 = st.columns([6, 1, 1])
-    with col1:
-        st.markdown("<div class='top-nav'>PTW Intelligence Suite</div>", unsafe_allow_html=True)
-    with col2:
-        if st.button("Log in"):
-            st.session_state.page = "auth"
-            st.session_state.show_register = False
-            st.rerun()
-    with col3:
-        if st.button("Register"):
-            st.session_state.page = "auth"
-            st.session_state.show_register = True
-            st.rerun()
+    st.markdown("""
+        <div class='top-nav'>
+            <div>PTW Intelligence Suite</div>
+            <div class='nav-links'>
+                <form action='#' onsubmit="return false;">
+                    <button onclick="window.location.href='/?page=auth&mode=login'">Log in</button>
+                    <button onclick="window.location.href='/?page=auth&mode=register'">Register</button>
+                </form>
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
     left_col, right_col = st.columns([1.3, 1])
 
@@ -130,6 +130,11 @@ def render_landing_page():
 
 def main_app():
     initialize_session_state()
+
+    query_params = st.experimental_get_query_params()
+    if query_params.get("page", [None])[0] == "auth":
+        st.session_state.page = "auth"
+        st.session_state.show_register = query_params.get("mode", ["register"])[0] == "register"
 
     if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
         render_landing_page()
