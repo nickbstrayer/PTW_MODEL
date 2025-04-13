@@ -1,5 +1,5 @@
 import streamlit as st
-from Scripts.streamlit_auth import render_auth_page, initialize_session_state
+from Scripts.streamlit_auth import render_auth_page as streamlit_render_auth_page, initialize_session_state
 from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
 from Scripts.stripe_billing_integration import render_stripe_billing_tab
@@ -32,10 +32,19 @@ def render_auth_page():
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
+        .breadcrumb {
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        .breadcrumb a {
+            text-decoration: none;
+            color: #0f1e45;
+            font-weight: 500;
+        }
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<a href='/?page=landing'>&larr; Back to Home</a>", unsafe_allow_html=True)
+    st.markdown("<div class='breadcrumb'><a href='/?page=landing'>&larr; Back to Home</a></div>", unsafe_allow_html=True)
     st.markdown("<div class='auth-header'>Account Access</div>", unsafe_allow_html=True)
     st.markdown("""
         <div class='auth-instructions'>
@@ -44,7 +53,7 @@ def render_auth_page():
     """, unsafe_allow_html=True)
 
     with st.container():
-        render_auth_page()
+        streamlit_render_auth_page()
 
 def main_app():
     initialize_session_state()
@@ -59,12 +68,12 @@ def main_app():
 
     # Route to authentication page if specified
     if page == "auth":
-        render_auth_page()  # Now renders the unique login/registration page with breadcrumb
+        render_auth_page()
         return
 
     # Redirect unauthenticated users to landing page
     if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
-        render_landing_page()  # Clean main marketing-style landing page
+        render_landing_page()
         return
 
     # Main sidebar navigation
