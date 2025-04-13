@@ -1,36 +1,33 @@
 import streamlit as st
-import pandas as pd
-
-# Sample placeholder admin table data
-USERS_DB = pd.DataFrame([
-    {"username": "admin", "email": "admin@example.com", "role": "admin", "status": "active"},
-    {"username": "demo", "email": "demo@example.com", "role": "user", "status": "unpaid"},
-    {"username": "tester", "email": "tester@example.com", "role": "user", "status": "active"},
-])
 
 def render_admin_dashboard_tab():
-    st.header("🔐 Admin Dashboard")
+    st.title("🛠️ Admin Dashboard")
 
-    st.markdown("Manage registered users and application access.")
+    if not st.session_state.get("is_authenticated"):
+        st.warning("You must be logged in to access this page.")
+        return
 
-    with st.expander("📋 View All Users"):
-        st.dataframe(USERS_DB, use_container_width=True)
+    if st.session_state.get("user_role") != "admin":
+        st.error("Access denied. You do not have administrative privileges.")
+        return
 
-    with st.expander("✏️ Update User Status"):
-        selected_user = st.selectbox("Select user to update", USERS_DB["username"])
-        new_status = st.selectbox("Set new status", ["active", "unpaid", "revoked"])
-        if st.button("Update Status"):
-            USERS_DB.loc[USERS_DB["username"] == selected_user, "status"] = new_status
-            st.success(f"Updated {selected_user}'s status to {new_status}.")
+    st.success(f"Welcome, {st.session_state.get('current_user')} (Admin)")
 
-    with st.expander("➕ Add New User (Simulation)"):
-        new_username = st.text_input("Username")
-        new_email = st.text_input("Email")
-        new_role = st.selectbox("Role", ["user", "admin"])
-        if st.button("Add User"):
-            if new_username and new_email:
-                new_row = {"username": new_username, "email": new_email, "role": new_role, "status": "active"}
-                USERS_DB.loc[len(USERS_DB)] = new_row
-                st.success("User added (simulated only – no DB persistence).")
-            else:
-                st.warning("Please provide both username and email.")
+    # Example content blocks
+    st.subheader("🔍 User Management")
+    st.info("View, revoke, or upgrade user access. (Coming soon...)")
+
+    st.subheader("💳 Billing Overview")
+    st.info("Monitor subscriptions, invoices, and payments. (Coming soon...)")
+
+    st.subheader("📊 System Metrics")
+    st.info("Uptime, API usage, and performance logs. (Coming soon...)")
+
+    st.subheader("📝 Activity Logs")
+    st.info("Track all user activity and admin actions. (Coming soon...)")
+
+    # Example admin tools UI
+    st.markdown("---")
+    with st.expander("🔧 Advanced Admin Tools"):
+        st.text("• Force logout for user\n• Reset subscription status\n• Export audit logs\n• Delete stale accounts")
+        st.button("🚨 Run Admin Utility (Disabled)", disabled=True)
