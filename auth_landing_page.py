@@ -41,6 +41,16 @@ def render_auth_page():
             color: #0f1e45;
             font-weight: 500;
         }
+        .auth-section-title {
+            font-size: 1.75rem;
+            color: #0f1e45;
+            margin-bottom: 0.5rem;
+        }
+        .auth-note {
+            font-size: 0.95rem;
+            color: #555;
+            margin-top: 1rem;
+        }
         </style>
     """, unsafe_allow_html=True)
 
@@ -51,6 +61,30 @@ def render_auth_page():
         Please register or log in to access the PTW Intelligence Suite tools and analytics. If you don't have an account, select 'Register' to get started.
         </div>
     """, unsafe_allow_html=True)
+
+    col1, col2 = st.columns([1, 1])
+
+    with col1:
+        st.markdown("<div class='auth-section-title'>Create Your Account</div>", unsafe_allow_html=True)
+        st.markdown("""
+            Register to unlock the full capabilities of the Price-to-Win Intelligence Suite.  
+            Your account gives you access to advanced tools for federal contract pricing, AI-powered insights, and real-time benchmarking.
+
+            - Use a government or company-issued email when possible.  
+            - Passwords must be at least 8 characters and include one number or symbol.
+        """)
+
+    with col2:
+        st.markdown("<div class='auth-section-title'>Log In to Your Account</div>", unsafe_allow_html=True)
+        st.markdown("""
+            Welcome back to the Price-to-Win Intelligence Suite.  
+            Enter your credentials to continue analyzing, pricing, and winning smarter.  
+            If you haven’t created an account yet, click on **Register** to sign up.
+        """)
+        st.markdown("""
+            <div class='auth-note'>🔒 Your session is secure.  
+            Need help accessing your account? <a href='mailto:support@ptwsuite.com'>Contact support</a></div>
+        """, unsafe_allow_html=True)
 
     with st.container():
         streamlit_render_auth_page()
