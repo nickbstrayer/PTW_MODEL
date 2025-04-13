@@ -30,11 +30,11 @@ def render_landing_page():
         .nav-links button {
             margin-left: 1.5rem;
             background: none;
-            color: white;
             border: none;
+            color: white;
             font-weight: 500;
-            font-size: 1rem;
             cursor: pointer;
+            font-size: 1rem;
         }
         .cta-button {
             padding: 0.75rem 2rem;
@@ -55,34 +55,23 @@ def render_landing_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # Top navigation
-    col1, col2 = st.columns([4, 1])
-    with col1:
-        st.markdown("""
-        <div class="top-nav">
-            <div>PTW Intelligence Suite</div>
-        </div>
-        """, unsafe_allow_html=True)
-    with col2:
-        st.markdown("""
-        <div class="top-nav" style="background-color: transparent;">
-            <div class="nav-links">
-                <form action="#" method="post">
-                    <button type="submit" name="log" formmethod="post">Log in</button>
-                    <button type="submit" name="reg" formmethod="post">Register</button>
-                </form>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    if 'log' in st.session_state:
-        st.session_state.page = "auth"
-        st.session_state.show_register = False
-        st.rerun()
-    if 'reg' in st.session_state:
-        st.session_state.page = "auth"
-        st.session_state.show_register = True
-        st.rerun()
+    # Top navigation with functional buttons
+    with st.container():
+        left_col, right_col = st.columns([6, 2])
+        with left_col:
+            st.markdown("<div class='top-nav'>PTW Intelligence Suite</div>", unsafe_allow_html=True)
+        with right_col:
+            col1, col2 = st.columns([1, 1])
+            with col1:
+                if st.button("Log in", key="login_nav"):
+                    st.session_state.page = "auth"
+                    st.session_state.show_register = False
+                    st.rerun()
+            with col2:
+                if st.button("Register", key="register_nav"):
+                    st.session_state.page = "auth"
+                    st.session_state.show_register = True
+                    st.rerun()
 
     # Hero + Register Split
     left_col, right_col = st.columns([1.3, 1])
@@ -144,6 +133,10 @@ def render_landing_page():
 
 def main_app():
     initialize_session_state()
+
+    if st.session_state.get("page") == "auth":
+        render_auth_page()
+        return
 
     if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
         render_landing_page()
