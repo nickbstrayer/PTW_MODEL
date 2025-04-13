@@ -14,7 +14,6 @@ st.set_page_config(
 def render_landing_page():
     if "show_register" not in st.session_state:
         st.session_state.show_register = True
-
     if "login_email" not in st.session_state:
         st.session_state.login_email = ""
     if "login_password" not in st.session_state:
@@ -115,9 +114,43 @@ def render_landing_page():
         </style>
     """, unsafe_allow_html=True)
 
+    st.markdown(f"""
+        <div class="top-nav">
+            <div>PTW Intelligence Suite</div>
+            <div class="nav-links">
+                <a href="#" onClick="window.location.reload();">Log in</a>
+                <a href="#" onClick="window.location.reload();">Register</a>
+            </div>
+        </div>
+
+        <div class="hero">
+            <div class="hero-text">
+                <h1>Price-to-Win Intelligence Suite</h1>
+                <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling, and AI-powered statistical analysis.</p>
+                <button class="cta-button" onClick="window.location.reload();">Get Started</button>
+            </div>
+
+            <div class="auth-box">
+                <h3>{'Register' if st.session_state.show_register else 'Log In'}</h3>
+                <form action="" method="post">
+                    <input type="text" name="email" placeholder="Email address" value="" />
+                    <input type="password" name="password" placeholder="Password" value="" />
+                    <button type="submit">{'Sign up' if st.session_state.show_register else 'Log In'}</button>
+                </form>
+                <small>
+                    {'Already have an account? <a href="#" onClick="window.location.reload();">Log in</a>' if st.session_state.show_register else 'Don\'t have an account? <a href="#" onClick="window.location.reload();">Register</a>'}
+                </small>
+            </div>
+        </div>
+
+        <div class="media-preview">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png" class="screenshot-placeholder">
+        </div>
+    """, unsafe_allow_html=True)
+
+    # Streamlit backend control
     email = st.text_input("Email address", key="login_email")
     password = st.text_input("Password", type="password", key="login_password")
-
     if st.session_state.show_register:
         if st.button("Sign up"):
             st.session_state.is_authenticated = True
@@ -135,44 +168,6 @@ def render_landing_page():
                 st.success("Welcome back!")
             else:
                 st.error("Invalid credentials.")
-
-    toggle_link = (
-        '<small>Already have an account? <a href="#" onClick="window.location.reload();">Log in</a></small>'
-        if st.session_state.show_register else
-        '<small>Don\'t have an account? <a href="#" onClick="window.location.reload();">Register</a></small>'
-    )
-
-    st.markdown(f"""
-        <div class="top-nav">
-            <div>PTW Intelligence Suite</div>
-            <div class="nav-links">
-                <a href="#" onClick="window.location.reload();">Log in</a>
-                <a href="#" onClick="window.location.reload();">Register</a>
-            </div>
-        </div>
-
-        <div class="hero">
-            <div class="hero-text">
-                <h1>Price-to-Win Intelligence Suite</h1>
-                <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling, and AI-powered statistical analysis.</p>
-                <button class="cta-button">Get Started</button>
-            </div>
-
-            <div class="auth-box">
-                <h3>{'Register' if st.session_state.show_register else 'Log In'}</h3>
-                <form>
-                    <input type="text" placeholder="Email address" value="{email}"/>
-                    <input type="password" placeholder="Password" value="{password}"/>
-                    <button type="submit">{'Sign up' if st.session_state.show_register else 'Log In'}</button>
-                </form>
-                {toggle_link}
-            </div>
-        </div>
-
-        <div class="media-preview">
-            <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png" class="screenshot-placeholder">
-        </div>
-    """, unsafe_allow_html=True)
 
 def main_app():
     initialize_session_state()
