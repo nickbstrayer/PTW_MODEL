@@ -56,8 +56,8 @@ def render_landing_page():
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
             <div class="nav-links">
-                <a href="?page=auth_page">Log in</a>
-                <a href="?page=auth_page">Register</a>
+                <a href="?page=auth">Log in</a>
+                <a href="?page=auth">Register</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -73,7 +73,7 @@ def render_landing_page():
             Welcome to PTW Intelligence Suite.
         """)
         if st.button("Get Started"):
-            st.session_state.page = "auth_page"
+            st.session_state.page = "auth"
             st.rerun()
 
     with right_col:
@@ -121,31 +121,34 @@ def render_landing_page():
 def render_auth_page():
     st.markdown("""
         <style>
-        .auth-header {
-            padding: 2rem 2rem 1rem;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: #0f1e45;
+        .breadcrumb {
+            font-size: 0.9rem;
+            margin-top: 1rem;
         }
-        .auth-wrapper {
-            padding: 3rem 2rem;
-            background-color: #f3f4f6;
-            border-radius: 12px;
-            max-width: 600px;
-            margin: 2rem auto;
+        .breadcrumb a {
+            color: #0f1e45;
+            text-decoration: none;
+            font-weight: 500;
         }
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='auth-header'>Authorization</div>", unsafe_allow_html=True)
-    st.markdown("<div class='auth-wrapper'>", unsafe_allow_html=True)
+    st.markdown("""
+        <div class="breadcrumb">
+            <a href="?page=landing">← Back to Home</a>
+        </div>
+    """, unsafe_allow_html=True)
+
+    st.title("Authorization")
+
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
     st.subheader("Register" if st.session_state.get("show_register", True) else "Log In")
 
     login_email = st.text_input("Email address", key="email_input_auth")
     login_password = st.text_input("Password", type="password", key="password_input_auth")
 
     if st.session_state.get("show_register", True):
-        if st.button("Sign up", key="signup_btn_auth"):
+        if st.button("Sign up"):
             st.session_state.is_authenticated = True
             st.session_state.user_role = "member"
             st.session_state.login_email = login_email
@@ -153,7 +156,7 @@ def render_auth_page():
             st.session_state.page = "main"
             st.rerun()
     else:
-        if st.button("Log In", key="login_btn_auth"):
+        if st.button("Log In"):
             if login_email == "admin" and login_password == "admin123":
                 st.session_state.is_authenticated = True
                 st.session_state.user_role = "admin"
@@ -172,7 +175,7 @@ def render_auth_page():
                 st.error("Invalid credentials.")
 
     toggle_text = "Already have an account? Log in" if st.session_state.get("show_register", True) else "Don't have an account? Register"
-    if st.button(toggle_text, key="toggle_auth"):
+    if st.button(toggle_text):
         st.session_state.show_register = not st.session_state.get("show_register", True)
         st.rerun()
 
@@ -182,7 +185,7 @@ def main_app():
     initialize_session_state()
 
     if not st.session_state.get("is_authenticated"):
-        if st.session_state.get("page") == "auth_page":
+        if st.session_state.get("page") == "auth":
             render_auth_page()
         else:
             render_landing_page()
