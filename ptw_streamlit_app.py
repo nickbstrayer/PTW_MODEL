@@ -73,31 +73,7 @@ def render_landing_page():
             padding: 2rem;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0,0,0,0.05);
-            max-width: 400px;
-            margin-left: auto;
-        }
-        .auth-box input {
-            width: 100%;
-            padding: 0.75rem;
-            margin-bottom: 1rem;
-            border: 1px solid #ccc;
-            border-radius: 6px;
-            font-size: 1rem;
-        }
-        .auth-box button {
-            width: 100%;
-            padding: 0.75rem;
-            background-color: #0f1e45;
-            color: white;
-            font-weight: 600;
-            font-size: 1rem;
-            border-radius: 6px;
-            border: none;
-        }
-        .auth-box small {
-            display: block;
-            text-align: center;
-            margin-top: 1rem;
+            max-width: 450px;
         }
         .media-preview {
             display: flex;
@@ -122,54 +98,54 @@ def render_landing_page():
                 <a href="#" onClick="window.location.reload();">Register</a>
             </div>
         </div>
-
         <div class="hero">
             <div class="hero-text">
                 <h1>Price-to-Win Intelligence Suite</h1>
                 <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling, and AI-powered statistical analysis.</p>
                 <button class="cta-button" onClick="window.location.reload();">Get Started</button>
             </div>
+    """, unsafe_allow_html=True)
 
-            <div class="auth-box">
-                <h3>{'Register' if st.session_state.show_register else 'Log In'}</h3>
-                <form action="" method="post">
-                    <input type="text" name="email" placeholder="Email address" value="{st.session_state.login_email}" />
-                    <input type="password" name="password" placeholder="Password" value="{st.session_state.login_password}" />
-                    <button type="submit">{'Sign up' if st.session_state.show_register else 'Log In'}</button>
-                </form>
-                <small>
-                    {'Already have an account? <a href="#" onClick="window.location.reload();">Log in</a>' if st.session_state.show_register else 'Don\'t have an account? <a href="#" onClick="window.location.reload();">Register</a>'}
-                </small>
-            </div>
+    with st.container():
+        st.markdown("""<div class="auth-box">""", unsafe_allow_html=True)
+        st.subheader("Register" if st.session_state.show_register else "Log In")
+        st.session_state.login_email = st.text_input("Email address", value=st.session_state.login_email, key="email_input_landing")
+        st.session_state.login_password = st.text_input("Password", type="password", value=st.session_state.login_password, key="password_input_landing")
+
+        if st.session_state.show_register:
+            if st.button("Sign up"):
+                st.session_state.is_authenticated = True
+                st.session_state.user_role = "member"
+                st.success("✅ Registered and logged in.")
+                st.experimental_rerun()
+        else:
+            if st.button("Log In"):
+                if st.session_state.login_email == "admin" and st.session_state.login_password == "admin123":
+                    st.session_state.is_authenticated = True
+                    st.session_state.user_role = "admin"
+                    st.success("✅ Welcome Admin!")
+                    st.experimental_rerun()
+                elif st.session_state.login_email and st.session_state.login_password:
+                    st.session_state.is_authenticated = True
+                    st.session_state.user_role = "member"
+                    st.success("✅ Welcome back!")
+                    st.experimental_rerun()
+                else:
+                    st.error("Invalid credentials.")
+
+        toggle_text = "Already have an account? Log in" if st.session_state.show_register else "Don't have an account? Register"
+        if st.button(toggle_text):
+            st.session_state.show_register = not st.session_state.show_register
+            st.experimental_rerun()
+
+        st.markdown("""</div>""", unsafe_allow_html=True)
+
+    st.markdown("""
         </div>
-
         <div class="media-preview">
             <img src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png" class="screenshot-placeholder">
         </div>
     """, unsafe_allow_html=True)
-
-    email = st.text_input("Email address", key="login_email")
-    password = st.text_input("Password", type="password", key="login_password")
-    if st.session_state.show_register:
-        if st.button("Sign up"):
-            st.session_state.is_authenticated = True
-            st.session_state.user_role = "member"
-            st.success("✅ Registered and logged in.")
-            st.experimental_rerun()
-    else:
-        if st.button("Log In"):
-            if email == "admin" and password == "admin123":
-                st.session_state.is_authenticated = True
-                st.session_state.user_role = "admin"
-                st.success("✅ Welcome Admin!")
-                st.experimental_rerun()
-            elif email and password:
-                st.session_state.is_authenticated = True
-                st.session_state.user_role = "member"
-                st.success("✅ Welcome back!")
-                st.experimental_rerun()
-            else:
-                st.error("Invalid credentials.")
 
 def main_app():
     initialize_session_state()
