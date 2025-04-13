@@ -63,9 +63,9 @@ def render_landing_page():
     """, unsafe_allow_html=True)
 
     # Hero Section + Login/Register
-    left, right = st.columns([1.5, 1])
+    col1, col2 = st.columns([1.5, 1])
 
-    with left:
+    with col1:
         st.markdown("### Price-to-Win Intelligence Suite")
         st.markdown("""
             Optimize your federal contracting strategy with data-driven insights and real-time market analysis
@@ -75,45 +75,46 @@ def render_landing_page():
             st.session_state.page = "auth"
             st.rerun()
 
-    with right:
-        st.markdown('<div class="card">', unsafe_allow_html=True)
-        st.markdown("### Register" if st.session_state.get("show_register", True) else "### Log In")
-        login_email = st.text_input("Email address", key="email_input_landing")
-        login_password = st.text_input("Password", type="password", key="password_input_landing")
+    with col2:
+        with st.container():
+            st.markdown('<div class="card">', unsafe_allow_html=True)
+            st.markdown("### Register" if st.session_state.get("show_register", True) else "### Log In")
+            login_email = st.text_input("Email address", key="email_input_landing")
+            login_password = st.text_input("Password", type="password", key="password_input_landing")
 
-        if st.session_state.get("show_register", True):
-            if st.button("Sign up"):
-                st.session_state.is_authenticated = True
-                st.session_state.user_role = "member"
-                st.session_state.login_email = login_email
-                st.success("✅ Registered and logged in.")
-                st.session_state.page = "main"
-                st.rerun()
-        else:
-            if st.button("Log In"):
-                if login_email == "admin" and login_password == "admin123":
-                    st.session_state.is_authenticated = True
-                    st.session_state.user_role = "admin"
-                    st.session_state.login_email = login_email
-                    st.success("✅ Welcome Admin!")
-                    st.session_state.page = "main"
-                    st.rerun()
-                elif login_email and login_password:
+            if st.session_state.get("show_register", True):
+                if st.button("Sign up"):
                     st.session_state.is_authenticated = True
                     st.session_state.user_role = "member"
                     st.session_state.login_email = login_email
-                    st.success("✅ Welcome back!")
+                    st.success("✅ Registered and logged in.")
                     st.session_state.page = "main"
                     st.rerun()
-                else:
-                    st.error("Invalid credentials.")
+            else:
+                if st.button("Log In"):
+                    if login_email == "admin" and login_password == "admin123":
+                        st.session_state.is_authenticated = True
+                        st.session_state.user_role = "admin"
+                        st.session_state.login_email = login_email
+                        st.success("✅ Welcome Admin!")
+                        st.session_state.page = "main"
+                        st.rerun()
+                    elif login_email and login_password:
+                        st.session_state.is_authenticated = True
+                        st.session_state.user_role = "member"
+                        st.session_state.login_email = login_email
+                        st.success("✅ Welcome back!")
+                        st.session_state.page = "main"
+                        st.rerun()
+                    else:
+                        st.error("Invalid credentials.")
 
-        toggle_text = "Already have an account? Log in" if st.session_state.get("show_register", True) else "Don't have an account? Register"
-        if st.button(toggle_text):
-            st.session_state.show_register = not st.session_state.get("show_register", True)
-            st.rerun()
+            toggle_text = "Already have an account? Log in" if st.session_state.get("show_register", True) else "Don't have an account? Register"
+            if st.button(toggle_text):
+                st.session_state.show_register = not st.session_state.get("show_register", True)
+                st.rerun()
 
-        st.markdown('</div>', unsafe_allow_html=True)
+            st.markdown('</div>', unsafe_allow_html=True)
 
 def main_app():
     initialize_session_state()
