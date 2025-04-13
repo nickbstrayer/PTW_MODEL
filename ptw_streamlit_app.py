@@ -1,73 +1,64 @@
 import streamlit as st
-from Scripts.streamlit_auth import render_auth_page, logout
+from Scripts.streamlit_auth import render_auth_page
+from Scripts.admin_dashboard import render_admin_dashboard_tab
 from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
 from Scripts.stripe_billing_integration import render_stripe_billing_tab
-from Scripts.admin_dashboard import render_admin_dashboard_tab
 
-# Set page config
-st.set_page_config(page_title="Price-to-Win Intelligence Suite", layout="wide")
+# Optional: Example placeholders if needed
+def render_salary_estimator_tab():
+    st.title("Salary Estimator")
+    st.info("Coming soon...")
 
-# Session state initialization
-if "authenticated" not in st.session_state:
-    st.session_state.authenticated = False
-    st.session_state.role = None
-    st.session_state.username = ""
+def render_ptw_calculator_tab():
+    st.title("Live PTW Calculator")
+    st.info("Coming soon...")
+
+def render_scenario_comparison_tab():
+    st.title("Scenario Comparison")
+    st.info("Coming soon...")
 
 # Sidebar Navigation
-menu_options = [
-    "Scenario Comparison",
-    "Salary Estimator",
-    "Live PTW Calculator",
-    "Data Integration",
-    "SAM Vendor Lookup",
-    "Manage Subscription",
-    "Admin Dashboard",
-    "User Login"
-]
+def sidebar_navigation():
+    st.sidebar.title("Go to")
 
-st.sidebar.title("Go to")
-selection = st.sidebar.radio("", menu_options)
+    tabs = {}
 
-# Main App Container
-st.title("💼 Price-to-Win Intelligence Suite")
+    if st.session_state.get("is_authenticated"):
+        user_role = st.session_state.get("user_role", "user")
 
-# Authenticated Sections
-if selection == "User Login":
-    render_auth_page()
-    if st.session_state.authenticated:
-        st.sidebar.success(f"Welcome, {st.session_state.username}")
-        if st.sidebar.button("🚪 Logout"):
-            if st.sidebar.confirm("Are you sure you want to logout?"):
-                logout()
-                st.rerun()
-else:
-    if not st.session_state.authenticated:
-        st.warning(f"🚫 Please log in to access {selection}.")
+        tabs["Scenario Comparison"] = render_scenario_comparison_tab
+        tabs["Salary Estimator"] = render_salary_estimator_tab
+        tabs["Live PTW Calculator"] = render_ptw_calculator_tab
+        tabs["Data Integration"] = render_data_integration_tab
+        tabs["SAM Vendor Lookup"] = render_sam_vendor_lookup_tab
+        tabs["Manage Subscription"] = render_stripe_billing_tab
+
+        if user_role == "admin":
+            tabs["Admin Dashboard"] = render_admin_dashboard_tab
+
+        tabs["User Login"] = render_auth_page
     else:
-        if selection == "Scenario Comparison":
-            st.subheader("Scenario Comparison")
-            st.info("Placeholder: Add scenario comparison UI here.")
+        tabs["User Login"] = render_auth_page
 
-        elif selection == "Salary Estimator":
-            st.subheader("Salary Estimator")
-            st.info("Placeholder: Add salary estimator model here.")
+    selected = st.sidebar.radio("Go to", list(tabs.keys()))
+    return tabs[selected]
 
-        elif selection == "Live PTW Calculator":
-            st.subheader("Live PTW Calculator")
-            st.info("Placeholder: Add calculator model here.")
+# App Entry Point
+def main_app():
+    st.set_page_config(
+        page_title="Price-to-Win Intelligence Suite",
+        layout="wide",
+        initial_sidebar_state="expanded"
+    )
 
-        elif selection == "Data Integration":
-            render_data_integration_tab()
+    if "is_authenticated" not in st.session_state:
+        st.session_state.is_authenticated = False
+        st.session_state.user_role = None
+        st.session_state.current_user = None
 
-        elif selection == "SAM Vendor Lookup":
-            render_sam_vendor_lookup_tab()
+    selected_tab = sidebar_navigation()
+    selected_tab()
 
-        elif selection == "Manage Subscription":
-            render_stripe_billing_tab()
-
-        elif selection == "Admin Dashboard":
-            if st.session_state.role == "admin":
-                render_admin_dashboard_tab()
-            else:
-                st.error("You are not authorized to view this page.")
+if __name__ == "__main__":
+    main_app()
