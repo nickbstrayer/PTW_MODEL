@@ -25,17 +25,15 @@ def render_landing_page():
             color: white;
             font-size: 1.25rem;
             font-weight: 600;
-        }
-        .nav-links {
-            display: flex;
-            gap: 1rem;
+            width: 100%;
         }
         .nav-links button {
+            margin-left: 1.5rem;
             background: none;
             color: white;
             border: none;
-            font-size: 1rem;
             font-weight: 500;
+            font-size: 1rem;
             cursor: pointer;
         }
         .cta-button {
@@ -54,28 +52,39 @@ def render_landing_page():
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
-        .auth-banner {
-            background-color: #f4f8ff;
-            padding: 2rem;
-            margin-top: 2rem;
-            border-top: 4px solid #007aff;
-            border-radius: 10px;
-        }
         </style>
     """, unsafe_allow_html=True)
 
-    col1, col2 = st.columns([6, 1])
+    # Top navigation
+    col1, col2 = st.columns([4, 1])
     with col1:
         st.markdown("""
-            <div class="top-nav">
-                <div>PTW Intelligence Suite</div>
-                <div class="nav-links">
-                    <button onclick="window.location.reload();">Log in</button>
-                    <button onclick="window.location.reload();">Register</button>
-                </div>
+        <div class="top-nav">
+            <div>PTW Intelligence Suite</div>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+        <div class="top-nav" style="background-color: transparent;">
+            <div class="nav-links">
+                <form action="#" method="post">
+                    <button type="submit" name="log" formmethod="post">Log in</button>
+                    <button type="submit" name="reg" formmethod="post">Register</button>
+                </form>
             </div>
+        </div>
         """, unsafe_allow_html=True)
 
+    if 'log' in st.session_state:
+        st.session_state.page = "auth"
+        st.session_state.show_register = False
+        st.rerun()
+    if 'reg' in st.session_state:
+        st.session_state.page = "auth"
+        st.session_state.show_register = True
+        st.rerun()
+
+    # Hero + Register Split
     left_col, right_col = st.columns([1.3, 1])
 
     with left_col:
