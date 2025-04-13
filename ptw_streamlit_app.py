@@ -5,141 +5,182 @@ from Scripts.streamlit_data_integration import render_data_integration_tab
 from Scripts.stripe_billing_integration import render_stripe_billing_tab
 from Scripts.admin_dashboard import render_admin_dashboard_tab
 
-# New: import the auth landing logic
-import auth_landing_page
-
 st.set_page_config(
     page_title="Price-to-Win Intelligence Suite",
     layout="wide",
     page_icon="📊"
 )
 
-# Initialize session state
-initialize_session_state()
+def render_landing_page():
+    initialize_session_state()
 
-# Handle session-based navigation
-if "page" not in st.session_state:
-    st.session_state.page = "landing"
-
-def navigate(page_name):
-    st.session_state.page = page_name
-    st.experimental_rerun()
-
-# UI Layout: Based on state
-if st.session_state.page == "landing":
-    # Header Bar
     st.markdown("""
         <style>
-        .top-header {
+        body {
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .top-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 1.25rem 2rem;
             background-color: #0f1e45;
             color: white;
+            font-size: 1.25rem;
+            font-weight: 600;
         }
         .nav-links a {
             margin-left: 1.5rem;
-            font-weight: 500;
             color: white;
             text-decoration: none;
+            font-weight: 500;
         }
-        .hero-section {
+        .hero {
             display: flex;
             justify-content: space-between;
             padding: 3rem 2rem;
             background-color: #f8f9fb;
         }
-        .hero-left {
+        .hero-text {
             max-width: 50%;
         }
-        .hero-title {
+        .hero-text h1 {
             font-size: 3rem;
-            color: #0f1e45;
             font-weight: 800;
+            color: #0f1e45;
+            margin-bottom: 1rem;
         }
-        .hero-subtitle {
-            font-size: 1.25rem;
+        .hero-text p {
+            font-size: 1.125rem;
             color: #333;
-            margin-top: 1rem;
             margin-bottom: 2rem;
+            line-height: 1.6;
         }
         .cta-button {
             padding: 0.75rem 2rem;
             background-color: #0f1e45;
             color: white;
+            font-size: 1rem;
             font-weight: 600;
             border: none;
-            border-radius: 6px;
-            font-size: 1rem;
+            border-radius: 8px;
             cursor: pointer;
         }
-        .hero-image {
-            width: 40%;
+        .auth-box {
+            background: white;
+            padding: 2rem;
             border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            max-width: 400px;
         }
         </style>
     """, unsafe_allow_html=True)
 
-    # HTML header and button routing
     st.markdown(f"""
-        <div class="top-header">
-            <div><strong>PTW Intelligence Suite</strong></div>
+        <div class="top-nav">
+            <div>PTW Intelligence Suite</div>
             <div class="nav-links">
-                <a href="#" onclick="window.location.href='?page=auth'">Login</a>
-                <a href="#" onclick="window.location.href='?page=auth'">Register</a>
+                <a href="?page=auth">Log in</a>
+                <a href="?page=auth">Register</a>
             </div>
         </div>
-        <div class="hero-section">
-            <div class="hero-left">
-                <div class="hero-title">Price-to-Win Intelligence Suite</div>
-                <div class="hero-subtitle">
-                    Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling and AI-powered statistical analysis.
-                </div>
+        <div class="hero">
+            <div class="hero-text">
+                <h1>Price-to-Win Intelligence Suite</h1>
+                <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling, and AI-powered statistical analysis.</p>
                 <button class="cta-button" onclick="window.location.href='?page=auth'">Get Started</button>
             </div>
-            <img class="hero-image" src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png" alt="Dashboard Screenshot" />
+            <div class="auth-box">
+    """, unsafe_allow_html=True)
+
+    login_email = st.text_input("Email address", key="email_input_landing")
+    login_password = st.text_input("Password", type="password", key="password_input_landing")
+
+    if st.session_state.get("show_register", True):
+        if st.button("Sign up"):
+            st.session_state.is_authenticated = True
+            st.session_state.user_role = "member"
+            st.session_state.login_email = login_email
+            st.success("✅ Registered and logged in.")
+            st.session_state.page = "main"
+            st.rerun()
+    else:
+        if st.button("Log In"):
+            if login_email == "admin" and login_password == "admin123":
+                st.session_state.is_authenticated = True
+                st.session_state.user_role = "admin"
+                st.session_state.login_email = login_email
+                st.success("✅ Welcome Admin!")
+                st.session_state.page = "main"
+                st.rerun()
+            elif login_email and login_password:
+                st.session_state.is_authenticated = True
+                st.session_state.user_role = "member"
+                st.session_state.login_email = login_email
+                st.success("✅ Welcome back!")
+                st.session_state.page = "main"
+                st.rerun()
+            else:
+                st.error("Invalid credentials.")
+
+    toggle_text = "Already have an account? Log in" if st.session_state.get("show_register", True) else "Don't have an account? Register"
+    if st.button(toggle_text):
+        st.session_state.show_register = not st.session_state.get("show_register", True)
+        st.rerun()
+
+    st.markdown("""
+            </div>
         </div>
     """, unsafe_allow_html=True)
 
-    # JavaScript handles href routing; catch query param here
-    if st.query_params.get("page") == "auth":
-        navigate("auth")
+def main_app():
+    initialize_session_state()
 
-elif st.session_state.page == "auth":
-    auth_landing_page.render_auth_landing_page()
+    if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
+        render_landing_page()
+        return
 
-elif st.session_state.page == "main":
     with st.sidebar:
+        st.image("https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png", width=140)
         st.title("📘 Navigation")
-        st.image("https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png", width=160)
-        selection = st.radio("Menu", [
-            "🏠 Home", 
-            "📈 Data Integration", 
+        tabs = [
+            "🏠 Home",
+            "📈 Data Integration",
             "🔍 SAM Vendor Lookup",
-            "💳 Manage Subscription", 
-            "🛠️ Admin Dashboard", 
-            "🔐 Logout"
-        ])
-        st.markdown(f"Logged in as: `{st.session_state.get('login_email', 'guest')}`")
+            "💳 Manage Subscription",
+            "🛠️ Admin Dashboard",
+            "🔐 Logout",
+        ]
+        selected_tab = st.radio("Select a section:", tabs)
+        st.markdown(f"""
+            <div style='margin-top:2rem;'>
+                <strong>Logged in as:</strong> {st.session_state.get("login_email", "User")}<br>
+                <em>Role:</em> {st.session_state.get("user_role", "member")}
+            </div>
+        """, unsafe_allow_html=True)
 
     st.title("📊 Price-to-Win Intelligence Suite")
 
-    if selection == "🏠 Home":
-        st.success("Welcome to your dashboard.")
-    elif selection == "📈 Data Integration":
+    if selected_tab.endswith("Home"):
+        st.subheader("Welcome Back!")
+        st.info("Use the sidebar to navigate to different tools and dashboards.")
+    elif selected_tab.endswith("Data Integration"):
         render_data_integration_tab()
-    elif selection == "🔍 SAM Vendor Lookup":
+    elif selected_tab.endswith("SAM Vendor Lookup"):
         render_sam_vendor_lookup_tab()
-    elif selection == "💳 Manage Subscription":
+    elif selected_tab.endswith("Manage Subscription"):
         render_stripe_billing_tab()
-    elif selection == "🛠️ Admin Dashboard":
+    elif selected_tab.endswith("Admin Dashboard"):
         if st.session_state.get("user_role") == "admin":
             render_admin_dashboard_tab()
         else:
-            st.warning("🔒 Admin access only.")
-    elif selection == "🔐 Logout":
-        for key in ["is_authenticated", "login_email", "user_role", "page"]:
-            st.session_state.pop(key, None)
-        st.success("🔓 Logged out. Refreshing...")
-        st.rerun()
+            st.warning("⚠️ Admin access required.")
+    elif selected_tab.endswith("Logout"):
+        st.session_state.is_authenticated = False
+        st.session_state.login_email = None
+        st.session_state.user_role = None
+        st.session_state.page = "landing"
+        st.success("✅ Logged out successfully. Please refresh.")
+
+if __name__ == "__main__":
+    main_app()
