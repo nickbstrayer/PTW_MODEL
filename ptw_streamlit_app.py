@@ -25,15 +25,17 @@ def render_landing_page():
             color: white;
             font-size: 1.25rem;
             font-weight: 600;
-            width: 100%;
+        }
+        .nav-links {
+            display: flex;
+            gap: 1rem;
         }
         .nav-links button {
-            margin-left: 1.5rem;
             background: none;
-            border: none;
             color: white;
-            font-weight: 500;
+            border: none;
             font-size: 1rem;
+            font-weight: 500;
             cursor: pointer;
         }
         .cta-button {
@@ -52,29 +54,28 @@ def render_landing_page():
             border-radius: 12px;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
+        .auth-banner {
+            background-color: #f4f8ff;
+            padding: 2rem;
+            margin-top: 2rem;
+            border-top: 4px solid #007aff;
+            border-radius: 10px;
+        }
         </style>
     """, unsafe_allow_html=True)
 
-    # Top navigation using buttons (no reload)
-    top_col1, top_col2 = st.columns([4, 1])
-    with top_col1:
+    col1, col2 = st.columns([6, 1])
+    with col1:
         st.markdown("""
-            <div class='top-nav'>
+            <div class="top-nav">
                 <div>PTW Intelligence Suite</div>
+                <div class="nav-links">
+                    <button onclick="window.location.reload();">Log in</button>
+                    <button onclick="window.location.reload();">Register</button>
+                </div>
             </div>
         """, unsafe_allow_html=True)
-    with top_col2:
-        st.markdown("""<div class='top-nav nav-links'>""", unsafe_allow_html=True)
-        login_btn = st.button("Log in", key="nav_login")
-        register_btn = st.button("Register", key="nav_register")
-        st.markdown("""</div>""", unsafe_allow_html=True)
 
-    if login_btn or register_btn:
-        st.session_state.page = "auth"
-        st.session_state.show_register = register_btn
-        st.rerun()
-
-    # Hero + Register Split
     left_col, right_col = st.columns([1.3, 1])
 
     with left_col:
