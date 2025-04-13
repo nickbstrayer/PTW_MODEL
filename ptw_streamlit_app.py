@@ -38,7 +38,7 @@ def render_landing_page():
         .hero {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 4rem;
+            gap: 3rem;
             padding: 3rem 2rem;
             background-color: #f8f9fb;
             align-items: start;
@@ -86,7 +86,7 @@ def render_landing_page():
         <div class="hero">
             <div class="hero-text">
                 <h1>Price-to-Win Intelligence Suite</h1>
-                <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling, and AI-powered statistical analysis.</p>
+                <p>Optimize your federal contracting strategy with data-driven insights and real-time market analysis using scenario-based modeling and AI-powered statistical analysis.</p>
                 <button class="cta-button" onclick="window.location.href='?page=auth'">Get Started</button>
             </div>
             <div class="auth-box">
@@ -132,6 +132,7 @@ def render_landing_page():
             </div>
         </div>
     """, unsafe_allow_html=True)
+
 
 def main_app():
     initialize_session_state()
