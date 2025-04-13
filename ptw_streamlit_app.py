@@ -56,8 +56,8 @@ def render_landing_page():
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
             <div class="nav-links">
-                <a href="?page=auth">Log in</a>
-                <a href="?page=auth">Register</a>
+                <a href="?page=auth_page">Log in</a>
+                <a href="?page=auth_page">Register</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
@@ -72,8 +72,8 @@ def render_landing_page():
             Price smarter. Win faster.  
             Welcome to PTW Intelligence Suite.
         """)
-        if st.button("Get Started", key="start_button"):
-            st.session_state.page = "auth"
+        if st.button("Get Started"):
+            st.session_state.page = "auth_page"
             st.rerun()
 
     with right_col:
@@ -118,11 +118,74 @@ def render_landing_page():
 
             st.markdown("</div>", unsafe_allow_html=True)
 
+def render_auth_page():
+    st.markdown("""
+        <style>
+        .auth-header {
+            padding: 2rem 2rem 1rem;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #0f1e45;
+        }
+        .auth-wrapper {
+            padding: 3rem 2rem;
+            background-color: #f3f4f6;
+            border-radius: 12px;
+            max-width: 600px;
+            margin: 2rem auto;
+        }
+        </style>
+    """, unsafe_allow_html=True)
+
+    st.markdown("<div class='auth-header'>Authorization</div>", unsafe_allow_html=True)
+    st.markdown("<div class='auth-wrapper'>", unsafe_allow_html=True)
+    st.subheader("Register" if st.session_state.get("show_register", True) else "Log In")
+
+    login_email = st.text_input("Email address", key="email_input_auth")
+    login_password = st.text_input("Password", type="password", key="password_input_auth")
+
+    if st.session_state.get("show_register", True):
+        if st.button("Sign up", key="signup_btn_auth"):
+            st.session_state.is_authenticated = True
+            st.session_state.user_role = "member"
+            st.session_state.login_email = login_email
+            st.success("✅ Registered and logged in.")
+            st.session_state.page = "main"
+            st.rerun()
+    else:
+        if st.button("Log In", key="login_btn_auth"):
+            if login_email == "admin" and login_password == "admin123":
+                st.session_state.is_authenticated = True
+                st.session_state.user_role = "admin"
+                st.session_state.login_email = login_email
+                st.success("✅ Welcome Admin!")
+                st.session_state.page = "main"
+                st.rerun()
+            elif login_email and login_password:
+                st.session_state.is_authenticated = True
+                st.session_state.user_role = "member"
+                st.session_state.login_email = login_email
+                st.success("✅ Welcome back!")
+                st.session_state.page = "main"
+                st.rerun()
+            else:
+                st.error("Invalid credentials.")
+
+    toggle_text = "Already have an account? Log in" if st.session_state.get("show_register", True) else "Don't have an account? Register"
+    if st.button(toggle_text, key="toggle_auth"):
+        st.session_state.show_register = not st.session_state.get("show_register", True)
+        st.rerun()
+
+    st.markdown("</div>", unsafe_allow_html=True)
+
 def main_app():
     initialize_session_state()
 
-    if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
-        render_landing_page()
+    if not st.session_state.get("is_authenticated"):
+        if st.session_state.get("page") == "auth_page":
+            render_auth_page()
+        else:
+            render_landing_page()
         return
 
     with st.sidebar:
