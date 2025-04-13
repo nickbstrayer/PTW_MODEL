@@ -17,68 +17,66 @@ def render_landing_page():
     st.markdown("""
         <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-            background-color: #ffffff;
-            color: #111111;
+            font-family: 'Segoe UI', sans-serif;
         }
         .top-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 2rem;
+            padding: 1.25rem 2rem;
             background-color: #0f1e45;
             color: white;
             font-size: 1.25rem;
             font-weight: 600;
         }
         .nav-links a {
-            margin-left: 2rem;
+            margin-left: 1.5rem;
             color: white;
             text-decoration: none;
             font-weight: 500;
         }
         .hero {
             display: grid;
-            grid-template-columns: 1.2fr 1fr;
-            padding: 4rem 2rem 2rem 2rem;
-            align-items: start;
+            grid-template-columns: 1fr 1fr;
             gap: 4rem;
+            padding: 3rem 2rem;
+            background-color: #ffffff;
+            align-items: start;
         }
         .hero-text h1 {
-            font-size: 2.75rem;
+            font-size: 3rem;
             font-weight: 800;
             color: #0f1e45;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1rem;
         }
         .hero-text p {
             font-size: 1.125rem;
-            margin: 0.5rem 0;
+            color: #333;
+            margin-bottom: 2rem;
+            line-height: 1.6;
         }
         .cta-button {
-            background-color: #000;
-            color: white;
             padding: 0.75rem 2rem;
+            background-color: black;
+            color: white;
+            font-size: 1rem;
             font-weight: 600;
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            margin-top: 1.5rem;
         }
         .auth-box {
             background: white;
             padding: 2rem;
             border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            border-top: 4px solid #22c55e;
             width: 100%;
-            border-top: 5px solid #22c55e;
-        }
-        .form-group label {
-            font-weight: 500;
         }
         </style>
     """, unsafe_allow_html=True)
 
-    st.markdown("""
+    st.markdown(f"""
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
             <div class="nav-links">
@@ -89,14 +87,14 @@ def render_landing_page():
         <div class="hero">
             <div class="hero-text">
                 <h1>Price-to-Win Intelligence Suite</h1>
-                <p>Turn data into decisions.</p>
-                <p>Price smarter. Win faster.</p>
-                <p>Welcome to PTW Intelligence Suite.</p>
-                <a href="?page=auth"><button class="cta-button">Get Started</button></a>
+                <p>Turn data into decisions.<br>
+                Price smarter. Win faster.<br>
+                Welcome to PTW Intelligence Suite.</p>
+                <button class="cta-button" onclick="window.location.href='?page=auth'">Get Started</button>
             </div>
             <div class="auth-box">
-                <h3>{}</h3>
-    """.format("Register" if st.session_state.get("show_register", True) else "Log In"), unsafe_allow_html=True)
+                <h3>{"Register" if st.session_state.get("show_register", True) else "Log In"}</h3>
+    """, unsafe_allow_html=True)
 
     login_email = st.text_input("Email address", key="email_input_landing")
     login_password = st.text_input("Password", type="password", key="password_input_landing")
@@ -133,7 +131,10 @@ def render_landing_page():
         st.session_state.show_register = not st.session_state.get("show_register", True)
         st.rerun()
 
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    st.markdown("""
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
 def main_app():
     initialize_session_state()
