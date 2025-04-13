@@ -58,16 +58,18 @@ def render_landing_page():
         </style>
     """, unsafe_allow_html=True)
 
+    # Top navigation
     st.markdown("""
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
             <div class="nav-links">
-                <a href="#" onclick="window.location.search='?page=auth'">Log in</a>
-                <a href="#" onclick="window.location.search='?page=auth'">Register</a>
+                <a href="?page=auth">Log in</a>
+                <a href="?page=auth">Register</a>
             </div>
         </div>
     """, unsafe_allow_html=True)
 
+    # Hero + Register Split
     left_col, right_col = st.columns([1.3, 1])
 
     with left_col:
@@ -95,8 +97,8 @@ def render_landing_page():
                     st.session_state.is_authenticated = True
                     st.session_state.user_role = "member"
                     st.session_state.login_email = login_email
-                    st.session_state.page = "main"
                     st.success("✅ Registered and logged in.")
+                    st.session_state.page = "main"
                     st.rerun()
             else:
                 st.info("Enter your credentials to access your dashboard.")
@@ -105,15 +107,15 @@ def render_landing_page():
                         st.session_state.is_authenticated = True
                         st.session_state.user_role = "admin"
                         st.session_state.login_email = login_email
-                        st.session_state.page = "main"
                         st.success("✅ Welcome Admin!")
+                        st.session_state.page = "main"
                         st.rerun()
                     elif login_email and login_password:
                         st.session_state.is_authenticated = True
                         st.session_state.user_role = "member"
                         st.session_state.login_email = login_email
-                        st.session_state.page = "main"
                         st.success("✅ Welcome back!")
+                        st.session_state.page = "main"
                         st.rerun()
                     else:
                         st.error("Invalid credentials.")
@@ -128,53 +130,55 @@ def render_landing_page():
 def main_app():
     initialize_session_state()
 
-    # Decide which page to show
+    if not st.session_state.get("is_authenticated"):
+        render_landing_page()
+        return
+
     if st.session_state.get("page") == "auth":
         render_auth_page()
         return
-    elif st.session_state.get("is_authenticated") and st.session_state.get("page") == "main":
-        with st.sidebar:
-            st.image("https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png", width=140)
-            st.title("📘 Navigation")
-            tabs = [
-                "🏠 Home",
-                "📈 Data Integration",
-                "🔍 SAM Vendor Lookup",
-                "💳 Manage Subscription",
-                "🛠️ Admin Dashboard",
-                "🔐 Logout",
-            ]
-            selected_tab = st.radio("Select a section:", tabs)
-            st.markdown(f"""
-                <div style='margin-top:2rem;'>
-                    <strong>Logged in as:</strong> {st.session_state.get("login_email", "User")}<br>
-                    <em>Role:</em> {st.session_state.get("user_role", "member")}
-                </div>
-            """, unsafe_allow_html=True)
 
-        st.title("📊 Price-to-Win Intelligence Suite")
+    with st.sidebar:
+        st.image("https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png", width=140)
+        st.title("📘 Navigation")
+        tabs = [
+            "🏠 Home",
+            "📈 Data Integration",
+            "🔍 SAM Vendor Lookup",
+            "💳 Manage Subscription",
+            "🛠️ Admin Dashboard" if st.session_state.get("user_role") == "admin" else None,
+            "🔐 Logout",
+        ]
+        tabs = [tab for tab in tabs if tab]  # remove None
+        selected_tab = st.radio("Select a section:", tabs)
 
-        if selected_tab.endswith("Home"):
-            st.subheader("Welcome Back!")
-            st.info("Use the sidebar to navigate to different tools and dashboards.")
-        elif selected_tab.endswith("Data Integration"):
-            render_data_integration_tab()
-        elif selected_tab.endswith("SAM Vendor Lookup"):
-            render_sam_vendor_lookup_tab()
-        elif selected_tab.endswith("Manage Subscription"):
-            render_stripe_billing_tab()
-        elif selected_tab.endswith("Admin Dashboard"):
-            if st.session_state.get("user_role") == "admin":
-                render_admin_dashboard_tab()
-            else:
-                st.warning("⚠️ Admin access required.")
-        elif selected_tab.endswith("Logout"):
-            st.session_state.is_authenticated = False
-            st.session_state.page = "auth"
-            st.success("✅ Logged out successfully.")
-            st.rerun()
-    else:
-        render_landing_page()
+        st.markdown(f"""
+            <div style='margin-top:2rem;'>
+                <strong>Logged in as:</strong> {st.session_state.get("login_email", "User")}<br>
+                <em>Role:</em> {st.session_state.get("user_role", "member")}
+            </div>
+        """, unsafe_allow_html=True)
+
+    st.title("📊 Price-to-Win Intelligence Suite")
+
+    if selected_tab.endswith("Home"):
+        st.subheader("Welcome Back!")
+        st.info("Use the sidebar to navigate to different tools and dashboards.")
+    elif selected_tab.endswith("Data Integration"):
+        render_data_integration_tab()
+    elif selected_tab.endswith("SAM Vendor Lookup"):
+        render_sam_vendor_lookup_tab()
+    elif selected_tab.endswith("Manage Subscription"):
+        render_stripe_billing_tab()
+    elif selected_tab.endswith("Admin Dashboard"):
+        render_admin_dashboard_tab()
+    elif selected_tab.endswith("Logout"):
+        st.session_state.is_authenticated = False
+        st.session_state.login_email = None
+        st.session_state.user_role = None
+        st.session_state.page = "landing"
+        st.success("✅ Logged out successfully.")
+        st.rerun()
 
 if __name__ == "__main__":
     main_app()
