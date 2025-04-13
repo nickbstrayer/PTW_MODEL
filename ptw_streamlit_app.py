@@ -1,122 +1,104 @@
 import streamlit as st
-import pandas as pd
-import joblib
-from io import BytesIO
 
-# Import feature modules
+# Page config
+st.set_page_config(
+    page_title="Price-to-Win Intelligence Suite",
+    page_icon="📊",
+    layout="wide",
+)
+
+# Tabs (import functions)
+from Scripts.streamlit_auth import render_auth_page
 from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
-from Scripts.streamlit_auth import render_auth_page
 from Scripts.stripe_billing_integration import render_stripe_billing_tab
+from Scripts.admin_dashboard import render_admin_dashboard_tab
 
-# Page setup
-st.set_page_config(page_title="PTW Win Probability Tool", layout="wide")
-st.title("Price-to-Win Intelligence Suite")
+# Optional future tabs
+# from Scripts.scenario_comparison import render_scenario_comparison_tab
+# from Scripts.salary_estimator import render_salary_estimator_tab
+# from Scripts.ptw_calculator import render_ptw_calculator_tab
 
-# Sidebar navigation
-selection = st.sidebar.radio("Go to", [
-    "Scenario Comparison",
-    "Salary Estimator",
-    "Live PTW Calculator",
-    "Data Integration",
-    "SAM Vendor Lookup",
-    "Manage Subscription",
-    "User Login"
-])
+# ----------------------------
+# Session State Defaults
+# ----------------------------
+if "authenticated" not in st.session_state:
+    st.session_state.authenticated = False
+if "username" not in st.session_state:
+    st.session_state.username = None
+if "role" not in st.session_state:
+    st.session_state.role = None
 
-# Scenario Comparison
-if selection == "Scenario Comparison":
-    if "user" not in st.session_state or not st.session_state.user:
-        st.warning("🚫 Please log in to access Scenario Comparison.")
-        st.stop()
-    st.subheader("Scenario-Based Rate Modeling")
-    file = st.file_uploader("Upload Excel File", type=["xlsx"])
-    if file:
-        df = pd.read_excel(file)
-        st.dataframe(df, use_container_width=True)
-        output = BytesIO()
-        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-            df.to_excel(writer, index=False, sheet_name='PTW_Scenarios')
-        st.download_button("Download Scenario Report", output.getvalue(), file_name="PTW_Scenario_Export.xlsx")
+# ----------------------------
+# Main App Navigation
+# ----------------------------
+def main_app():
+    st.title("💼 Price-to-Win Intelligence Suite")
 
-# Salary Estimator
-elif selection == "Salary Estimator":
-    if "user" not in st.session_state or not st.session_state.user:
-        st.warning("🚫 Please log in to access Salary Estimator.")
-        st.stop()
-    st.header("AI-Powered Salary Estimator")
-    try:
-        model, feature_cols = joblib.load("salary_estimator_model.pkl")
-        job_title = st.selectbox("Job Title", [
-            "Logistics Analyst IV", "Program Manager", "Management Analyst",
-            "Supply Technician", "Medical LNO", "Administrative Assistant",
-            "Database Analyst", "Help Desk Specialist"
-        ])
-        education = st.selectbox("Education Requirement", ["High School", "Associate's", "Bachelor's"])
-        experience = st.slider("Years of Experience", min_value=0, max_value=30, value=5)
-        clearance = st.selectbox("Clearance Required", ["None", "Secret"])
-        location = st.selectbox("Location", [
-            "Fort Bragg, NC", "Frederick, MD", "Remote", "Fort Carson, CO",
-            "Germany", "Fort Detrick, MD", "JB Elmendorf–Richardson, AK", "Ft. Cavazos, TX"
-        ])
+    menu = [
+        "Scenario Comparison",
+        "Salary Estimator",
+        "Live PTW Calculator",
+        "Data Integration",
+        "SAM Vendor Lookup",
+        "Manage Subscription",
+        "User Login",
+    ]
 
-        input_df = pd.DataFrame([{
-            "Job Title": job_title,
-            "Education Requirement": education,
-            "Years of Experience": experience,
-            "Clearance Required": clearance,
-            "Location": location
-        }])
-        input_encoded = pd.get_dummies(input_df).reindex(columns=feature_cols, fill_value=0)
-        estimated_salary = model.predict(input_encoded)[0]
-        st.success(f"Estimated Competitive Base Salary: ${estimated_salary:,.2f}")
-    except Exception as e:
-        st.error("Model could not be loaded or input structure mismatch.")
+    if st.session_state.role == "admin":
+        menu.append("Admin Dashboard")
 
-# Live PTW Calculator
-elif selection == "Live PTW Calculator":
-    if "user" not in st.session_state or not st.session_state.user:
-        st.warning("🚫 Please log in to use the PTW Calculator.")
-        st.stop()
-    st.subheader("Live PTW Rate Evaluation")
-    proposed_rate = st.number_input("Proposed Bill Rate ($/hr)", value=100.00)
-    evaluation_type = st.selectbox("Evaluation Type", ["LPTA", "Best Value"])
-    intensity = st.selectbox("Job Intensity", ["High", "Medium", "Low"])
-    specialized = st.selectbox("Specialized/Unique Requirement", ["Yes", "No"])
-    trend = st.selectbox("Political/Government Trend", [
-        "Expansionary (+0.03)", "Neutral (0)", "Contractionary (-0.03)"
-    ])
-    mod = 1 + (0.03 if trend.startswith("Expansionary") else -0.03 if trend.startswith("Contractionary") else 0)
-    spec_mod = 1.05 if specialized == "Yes" else 1
-    int_mod = 1.1 if intensity == "High" else 1.05 if intensity == "Medium" else 1
-    adjusted_rate = proposed_rate * mod * spec_mod * int_mod
+    choice = st.sidebar.radio("Go to", menu)
 
-    win_prob = 0.85 if evaluation_type == "LPTA" and intensity == "High" else \
-               0.75 if evaluation_type == "LPTA" and intensity == "Medium" else \
-               0.65 if evaluation_type == "LPTA" else \
-               0.65 if intensity == "High" else 0.55 if intensity == "Medium" else 0.45
+    if choice == "Scenario Comparison":
+        if st.session_state.authenticated:
+            st.subheader("Scenario Comparison")
+            st.info("This section will show PTW scenario analysis.")
+        else:
+            st.warning("⛔ Please log in to access Scenario Comparison.")
 
-    st.metric(label="Adjusted Rate ($/hr)", value=f"${adjusted_rate:.2f}")
-    st.metric(label="Win Probability (%)", value=f"{int(win_prob * 100)}%")
+    elif choice == "Salary Estimator":
+        if st.session_state.authenticated:
+            st.subheader("Salary Estimator")
+            st.info("This section will include salary trend predictions.")
+        else:
+            st.warning("⛔ Please log in to access Salary Estimator.")
 
-# Data Integration
-elif selection == "Data Integration":
-    if "user" not in st.session_state or not st.session_state.user:
-        st.warning("🚫 Please log in to access Data Integration.")
-        st.stop()
-    render_data_integration_tab()
+    elif choice == "Live PTW Calculator":
+        if st.session_state.authenticated:
+            st.subheader("Live PTW Calculator")
+            st.info("This section will provide a real-time PTW tool.")
+        else:
+            st.warning("⛔ Please log in to access PTW Calculator.")
 
-# SAM Vendor Lookup
-elif selection == "SAM Vendor Lookup":
-    if "user" not in st.session_state or not st.session_state.user:
-        st.warning("🚫 Please log in to access SAM Lookup.")
-        st.stop()
-    render_sam_vendor_lookup_tab()
+    elif choice == "Data Integration":
+        if st.session_state.authenticated:
+            render_data_integration_tab()
+        else:
+            st.warning("⛔ Please log in to access Data Integration.")
 
-# Manage Subscription
-elif selection == "Manage Subscription":
-    render_stripe_billing_tab()
+    elif choice == "SAM Vendor Lookup":
+        if st.session_state.authenticated:
+            render_sam_vendor_lookup_tab()
+        else:
+            st.warning("⛔ Please log in to access SAM Lookup.")
 
-# User Login/Register
-elif selection == "User Login":
-    render_auth_page()
+    elif choice == "Manage Subscription":
+        if st.session_state.authenticated:
+            render_stripe_billing_tab()
+        else:
+            st.warning("⛔ Please log in to access billing.")
+
+    elif choice == "User Login":
+        render_auth_page()
+
+    elif choice == "Admin Dashboard":
+        if st.session_state.role == "admin":
+            render_admin_dashboard_tab()
+        else:
+            st.warning("⛔ Admin access only.")
+
+# ----------------------------
+# Start App
+# ----------------------------
+main_app()
