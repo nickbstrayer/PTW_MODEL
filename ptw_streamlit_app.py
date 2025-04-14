@@ -47,8 +47,11 @@ def main_app():
             """, unsafe_allow_html=True)
 
         with right:
-            with st.container():
-                render_auth_page()
+            st.markdown("""
+                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            """, unsafe_allow_html=True)
+            render_auth_page()
+            st.markdown("""</div>""", unsafe_allow_html=True)
         return
 
     # Main app interface (authenticated)
