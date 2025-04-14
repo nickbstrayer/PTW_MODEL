@@ -38,13 +38,19 @@ def render_auth_page():
                 padding: 2rem;
                 border-radius: 12px;
                 box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+                max-width: 480px;
+                margin-left: auto;
             }
             .auth-layout {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 3rem;
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
                 margin-top: 2rem;
                 padding: 0 2rem;
+            }
+            .auth-left {
+                max-width: 500px;
+                padding: 2rem;
             }
             .auth-left h3 {
                 margin-bottom: 1rem;
@@ -75,7 +81,7 @@ def render_auth_page():
     st.markdown("""
         <div style='padding: 1rem 2rem;'>
             <h1>Authorization</h1>
-            <h3>Please {}</h3>
+            <h3>Please {} to continue</h3>
             <div style='margin-top: 1rem;'>
                 <div style='background-color: #e6f1fc; padding: 1rem; border-radius: 8px;'>
                     Use your credentials to access the PTW Intelligence Suite.
@@ -98,8 +104,8 @@ def render_auth_page():
         </div>
     """, unsafe_allow_html=True)
 
-    st.markdown("<div class='auth-right'><div class='auth-card'>", unsafe_allow_html=True)
+    st.markdown("<div class='auth-card'>", unsafe_allow_html=True)
     streamlit_render_auth_page()
-    st.markdown("</div></div>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
     st.markdown("</div>", unsafe_allow_html=True)  # End layout div
