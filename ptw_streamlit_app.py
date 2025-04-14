@@ -4,8 +4,7 @@ from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
 from Scripts.stripe_billing_integration import render_stripe_billing_tab
 from Scripts.admin_dashboard import render_admin_dashboard_tab
-from auth_landing_page import render_auth_page  # ✅ Authorization page renderer
-from main_landing_page import render_landing_page  # ✅ Main homepage renderer (if you renamed it)
+from auth_landing_page import render_landing_page  # Dedicated authorization/landing page
 
 st.set_page_config(
     page_title="Price-to-Win Intelligence Suite",
@@ -24,17 +23,17 @@ def main_app():
 
     page = query_params.get("page", ["landing"])[0]
 
-    # ✅ If URL contains ?page=auth, render the Authorization Page
+    # Route to authorization page if specified
     if page == "auth":
-        render_auth_page()
+        render_landing_page()
         return
 
-    # 🔒 Redirect unauthenticated users to landing page
+    # Redirect unauthenticated users to landing page
     if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
         render_landing_page()
         return
 
-    # Main sidebar navigation for logged-in users
+    # Main sidebar navigation
     with st.sidebar:
         st.image("https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png", width=140)
         st.title("📘 Navigation")
@@ -54,7 +53,7 @@ def main_app():
             </div>
         """, unsafe_allow_html=True)
 
-    # Main content area
+    # Main content area based on selected tab
     st.title("📊 Price-to-Win Intelligence Suite")
 
     if selected_tab.endswith("Home"):
