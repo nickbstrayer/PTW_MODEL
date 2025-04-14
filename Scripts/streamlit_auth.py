@@ -34,7 +34,6 @@ def render_auth_page():
                 st.session_state.user_role = "admin" if email == "admin" else "member"
                 st.session_state.page = "main"
                 st.success("✅ Login successful!")
-                st.experimental_set_query_params(page="main")
                 st.experimental_rerun()
             else:
                 st.error("❌ Invalid credentials.")
@@ -49,5 +48,4 @@ def render_auth_page():
                 st.session_state.user_role = "member"
                 st.session_state.page = "main"
                 st.success("🎉 Registration complete. You're now logged in.")
-                st.experimental_set_query_params(page="main")
                 st.experimental_rerun()
