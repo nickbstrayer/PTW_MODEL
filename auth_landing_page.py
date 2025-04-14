@@ -40,17 +40,19 @@ def render_auth_page():
                 box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
             }
             .auth-layout {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                margin-top: 2rem;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
                 gap: 3rem;
+                margin-top: 2rem;
+                padding: 0 2rem;
             }
-            .auth-left {
-                flex: 1;
+            .auth-left h3 {
+                margin-bottom: 1rem;
             }
-            .auth-right {
-                flex: 1;
+            .auth-left ul {
+                list-style: disc;
+                padding-left: 1.5rem;
+                color: #333;
             }
         </style>
     """, unsafe_allow_html=True)
@@ -70,9 +72,17 @@ def render_auth_page():
     st.markdown("[← Back to Home](?page=landing)", unsafe_allow_html=True)
 
     # Title and Intro
-    st.title("Authorization")
-    st.subheader(f"Please {'log in' if mode == 'login' else 'register'} to continue")
-    st.info("Use your credentials to access the PTW Intelligence Suite.")
+    st.markdown("""
+        <div style='padding: 1rem 2rem;'>
+            <h1>Authorization</h1>
+            <h3>Please {}</h3>
+            <div style='margin-top: 1rem;'>
+                <div style='background-color: #e6f1fc; padding: 1rem; border-radius: 8px;'>
+                    Use your credentials to access the PTW Intelligence Suite.
+                </div>
+            </div>
+        </div>
+    """.format("log in" if mode == "login" else "register"), unsafe_allow_html=True)
 
     # Layout
     st.markdown("<div class='auth-layout'>", unsafe_allow_html=True)
