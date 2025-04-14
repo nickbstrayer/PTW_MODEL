@@ -1,9 +1,5 @@
 import streamlit as st
 
-# Dummy in-memory store for example
-if "users" not in st.session_state:
-    st.session_state.users = {"admin": "admin"}  # default admin login
-
 def initialize_session_state():
     if "is_authenticated" not in st.session_state:
         st.session_state.is_authenticated = False
@@ -13,6 +9,9 @@ def initialize_session_state():
         st.session_state.user_role = ""
     if "page" not in st.session_state:
         st.session_state.page = "landing"
+    if "users" not in st.session_state:
+        # Default user for login
+        st.session_state.users = {"admin": "admin"}
 
 def render_auth_page():
     mode = st.query_params.get("mode", "register")
@@ -29,7 +28,8 @@ def render_auth_page():
 
     if auth_mode == "Login":
         if st.button("Login"):
-            if email in st.session_state.users and st.session_state.users[email] == password:
+            users = st.session_state.get("users", {})
+            if email in users and users[email] == password:
                 st.session_state.is_authenticated = True
                 st.session_state.login_email = email
                 st.session_state.user_role = "admin" if email == "admin" else "member"
