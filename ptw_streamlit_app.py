@@ -35,20 +35,49 @@ def main_app():
         </div>
     """, unsafe_allow_html=True)
 
-    # Hero and Auth CTA Split
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown("""
-        ## Price-to-Win Intelligence Suite
-        Turn data into decisions.  
-        Price smarter. Win faster.  
-        Welcome to PTW Intelligence Suite.
-        """)
-        st.button("Get Started", on_click=lambda: st.switch_page("?page=auth&mode=register"))
+    # Hero and Auth CTA Split Layout with proper alignment and spacing
+    st.markdown("""
+        <style>
+            .container {
+                display: flex;
+                justify-content: space-between;
+                padding: 2rem 1rem;
+            }
+            .hero-box, .auth-box {
+                background: white;
+                padding: 2rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                width: 48%;
+            }
+            .hero-box h2 {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+            .hero-box p {
+                font-size: 1.125rem;
+                margin: 0.25rem 0;
+            }
+        </style>
+        <div class="container">
+            <div class="hero-box">
+                <h2>Price-to-Win Intelligence Suite</h2>
+                <p>Turn data into decisions.</p>
+                <p>Price smarter. Win faster.</p>
+                <p>Welcome to PTW Intelligence Suite.</p>
+                <a href="?page=auth&mode=register">
+                    <button style="margin-top:1rem; padding:0.5rem 1.5rem; font-size:1rem; font-weight:500; background-color:#0f1e45; color:white; border:none; border-radius:5px; cursor:pointer;">Get Started</button>
+                </a>
+            </div>
+            <div class="auth-box">
+    """, unsafe_allow_html=True)
 
-    with col2:
-        # Inline render_auth_page depending on mode (to avoid duplication)
-        render_auth_page()
+    render_auth_page()
+
+    st.markdown("""
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
 
 if __name__ == "__main__":
     main_app()
