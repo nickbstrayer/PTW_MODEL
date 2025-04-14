@@ -1,28 +1,53 @@
 import streamlit as st
 
-# In-memory user store for demo
-users = {
-    "admin": {"password": "admin", "role": "admin"},
-    "user": {"password": "user", "role": "member"}
+# Simulated user database
+user_db = {
+    "admin": "password123",
+    "user@example.com": "welcome123"
 }
 
 def initialize_session_state():
     if "is_authenticated" not in st.session_state:
         st.session_state.is_authenticated = False
     if "login_email" not in st.session_state:
-        st.session_state.login_email = None
+        st.session_state.login_email = ""
     if "user_role" not in st.session_state:
-        st.session_state.user_role = None
+        st.session_state.user_role = "member"
     if "page" not in st.session_state:
         st.session_state.page = "landing"
 
 def render_auth_page():
-    mode = st.query_params.get("mode", ["login"])[0]
+    mode = st.query_params.get("mode", "login")
 
-    st.markdown("""
-        <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
-            <h2 style="font-size: 1.75rem; margin-bottom: 1rem;">🔐 PTW Intelligence Suite</h2>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown("### 🔐 PTW Intelligence Suite")
 
-    st
+    # Auth form
+    auth_mode = st.radio("Choose Option", ["Login", "Register"], index=0 if mode == "login" else 1)
+    email = st.text_input("Email")
+    password = st.text_input("Password", type="password")
+
+    if auth_mode == "Login":
+        if st.button("Login"):
+            if email in user_db and user_db[email] == password:
+                st.session_state.is_authenticated = True
+                st.session_state.login_email = email
+                st.session_state.user_role = "admin" if email == "admin" else "member"
+                st.session_state.page = "main"
+                st.success("✅ Login successful!")
+                st.experimental_set_query_params(page="main")
+                st.experimental_rerun()
+            else:
+                st.error("❌ Invalid credentials.")
+    else:
+        if st.button("Register"):
+            if email in user_db:
+                st.warning("⚠️ User already exists.")
+            else:
+                user_db[email] = password
+                st.session_state.is_authenticated = True
+                st.session_state.login_email = email
+                st.session_state.user_role = "member"
+                st.session_state.page = "main"
+                st.success("🎉 Registration complete. You're now logged in.")
+                st.experimental_set_query_params(page="main")
+                st.experimental_rerun()
