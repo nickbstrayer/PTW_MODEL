@@ -41,13 +41,14 @@ def main_app():
                     <p style="font-size: 1.125rem; margin: 0.25rem 0;">Price smarter. Win faster.</p>
                     <p style="font-size: 1.125rem; margin: 0.25rem 0;">Welcome to PTW Intelligence Suite.</p>
                     <a href="?page=auth&mode=register">
-                        <button style="margin-top:1rem; padding:0.5rem 1.5rem; font-size:1rem; font-weight:500; background-color:#0f1e45; color:white; border:none; border-radius:5px; cursor:pointer;">Get Started</button>
+                        <button style="margin-top:1rem; padding:0.5rem 1.5rem; font-size:1rem; font-weight:500; background-color:#0f1e45; color:white; border:none; border-radius:5px; cursor:pointer;">Learn More</button>
                     </a>
                 </div>
             """, unsafe_allow_html=True)
         with right:
             st.markdown("""
-                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); min-height: 400px; display: flex; flex-direction: column; justify-content: space-between;">
+                    <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Login or Register to PTW Intelligence Suite to Get Started</h3>
             """, unsafe_allow_html=True)
             render_auth_page()
             st.markdown("</div>", unsafe_allow_html=True)
