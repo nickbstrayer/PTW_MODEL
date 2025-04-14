@@ -21,7 +21,7 @@ def render_auth_page():
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 1.25rem 2rem;
+                padding: 1rem 2rem;
                 background-color: #0f1e45;
                 color: white;
                 font-size: 1.25rem;
@@ -33,37 +33,36 @@ def render_auth_page():
                 text-decoration: none;
                 font-weight: 500;
             }
-            .auth-card {
-                background-color: white;
+            .auth-wrapper {
+                display: flex;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 4rem;
                 padding: 2rem;
+                margin-top: 2rem;
+            }
+            .auth-info {
+                max-width: 400px;
+            }
+            .auth-info h2 {
+                margin-bottom: 1rem;
+                color: #0f1e45;
+            }
+            .auth-info ul {
+                list-style-type: disc;
+                padding-left: 1.5rem;
+            }
+            .auth-card {
+                max-width: 400px;
+                padding: 2rem;
+                background-color: white;
                 border-radius: 12px;
                 box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-                max-width: 480px;
-                margin-left: auto;
-            }
-            .auth-layout {
-                display: flex;
-                justify-content: space-between;
-                align-items: flex-start;
-                margin-top: 2rem;
-                padding: 0 2rem;
-            }
-            .auth-left {
-                max-width: 500px;
-                padding: 2rem;
-            }
-            .auth-left h3 {
-                margin-bottom: 1rem;
-            }
-            .auth-left ul {
-                list-style: disc;
-                padding-left: 1.5rem;
-                color: #333;
             }
         </style>
     """, unsafe_allow_html=True)
 
-    # Header
+    # Top nav bar
     st.markdown("""
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
@@ -75,27 +74,27 @@ def render_auth_page():
     """, unsafe_allow_html=True)
 
     # Breadcrumb trail
-    st.markdown("[← Back to Home](?page=landing)", unsafe_allow_html=True)
+    st.markdown("<a href='?page=landing'>&larr; Back to Home</a>", unsafe_allow_html=True)
 
-    # Title and Intro
-    st.markdown("""
+    # Title and context
+    st.markdown(f"""
         <div style='padding: 1rem 2rem;'>
             <h1>Authorization</h1>
-            <h3>Please {} to continue</h3>
+            <h3>Please {'log in' if mode == 'login' else 'register'} to continue</h3>
             <div style='margin-top: 1rem;'>
                 <div style='background-color: #e6f1fc; padding: 1rem; border-radius: 8px;'>
                     Use your credentials to access the PTW Intelligence Suite.
                 </div>
             </div>
         </div>
-    """.format("log in" if mode == "login" else "register"), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
 
-    # Layout
-    st.markdown("<div class='auth-layout'>", unsafe_allow_html=True)
+    # Main layout
+    st.markdown("<div class='auth-wrapper'>", unsafe_allow_html=True)
 
     st.markdown("""
-        <div class='auth-left'>
-            <h3>Why PTW?</h3>
+        <div class='auth-info'>
+            <h2>Why PTW?</h2>
             <ul>
                 <li>Data-driven pricing strategy</li>
                 <li>Real-time benchmarks</li>
@@ -108,4 +107,4 @@ def render_auth_page():
     streamlit_render_auth_page()
     st.markdown("</div>", unsafe_allow_html=True)
 
-    st.markdown("</div>", unsafe_allow_html=True)  # End layout div
+    st.markdown("</div>", unsafe_allow_html=True)  # Close auth-wrapper div
