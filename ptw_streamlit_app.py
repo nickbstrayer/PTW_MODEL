@@ -31,49 +31,26 @@ def main_app():
             </div>
         """, unsafe_allow_html=True)
 
-        # Split layout for hero and login/register
-        st.markdown("""
-            <style>
-                .container {
-                    display: flex;
-                    justify-content: space-between;
-                    padding: 2rem 1rem;
-                }
-                .hero-box, .auth-box {
-                    background: white;
-                    padding: 2rem;
-                    border-radius: 8px;
-                    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-                    width: 48%;
-                }
-                .hero-box h2 {
-                    font-size: 2rem;
-                    margin-bottom: 0.5rem;
-                }
-                .hero-box p {
-                    font-size: 1.125rem;
-                    margin: 0.25rem 0;
-                }
-            </style>
-            <div class="container">
-                <div class="hero-box">
-                    <h2>Price-to-Win Intelligence Suite</h2>
-                    <p>Turn data into decisions.</p>
-                    <p>Price smarter. Win faster.</p>
-                    <p>Welcome to PTW Intelligence Suite.</p>
+        # Styled 2-column layout using columns
+        left, right = st.columns([1, 1])
+        with left:
+            st.markdown("""
+                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Price-to-Win Intelligence Suite</h2>
+                    <p style="font-size: 1.125rem; margin: 0.25rem 0;">Turn data into decisions.</p>
+                    <p style="font-size: 1.125rem; margin: 0.25rem 0;">Price smarter. Win faster.</p>
+                    <p style="font-size: 1.125rem; margin: 0.25rem 0;">Welcome to PTW Intelligence Suite.</p>
                     <a href="?page=auth&mode=register">
                         <button style="margin-top:1rem; padding:0.5rem 1.5rem; font-size:1rem; font-weight:500; background-color:#0f1e45; color:white; border:none; border-radius:5px; cursor:pointer;">Get Started</button>
                     </a>
                 </div>
-                <div class="auth-box">
-        """, unsafe_allow_html=True)
-
-        render_auth_page()
-
-        st.markdown("""
-                </div>
-            </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
+        with right:
+            st.markdown("""
+                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+            """, unsafe_allow_html=True)
+            render_auth_page()
+            st.markdown("</div>", unsafe_allow_html=True)
         return
 
     # Main app interface (authenticated)
