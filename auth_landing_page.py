@@ -2,14 +2,9 @@ import streamlit as st
 from Scripts.streamlit_auth import render_auth_page as streamlit_render_auth_page, initialize_session_state
 
 # This page is only for authorization (Login/Register)
-def render_auth_page():
-    # Move set_page_config to the TOP of this file
-    st.set_page_config(
-        page_title="Authorization | PTW Intelligence Suite",
-        layout="wide",
-        page_icon="🔐"
-    )
+# The set_page_config must be moved out of this function and to the TOP-LEVEL ptw_streamlit_app.py
 
+def render_auth_page():
     initialize_session_state()
 
     # Safely get mode (login or register)
