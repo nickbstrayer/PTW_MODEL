@@ -1,14 +1,15 @@
 import streamlit as st
 from Scripts.streamlit_auth import render_auth_page as streamlit_render_auth_page, initialize_session_state
 
-# This page is only for authorization (Login/Register)
-def render_auth_page():
-    st.set_page_config(
-        page_title="Authorization | PTW Intelligence Suite",
-        layout="wide",
-        page_icon="🔐"
-    )
+# ✅ MUST BE FIRST Streamlit command
+st.set_page_config(
+    page_title="Authorization | PTW Intelligence Suite",
+    layout="wide",
+    page_icon="🔐"
+)
 
+# ✅ This page is only for authorization (Login/Register)
+def render_auth_page():
     initialize_session_state()
 
     # Safely get mode (login or register)
@@ -18,6 +19,8 @@ def render_auth_page():
         query_params = st.experimental_get_query_params()
 
     mode = query_params.get("mode", ["register"])[0]
+
+    # Inject style
     st.markdown("""
         <style>
             .top-nav {
@@ -45,7 +48,7 @@ def render_auth_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # Header
+    # Top nav bar
     st.markdown("""
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
@@ -56,20 +59,22 @@ def render_auth_page():
         </div>
     """, unsafe_allow_html=True)
 
+    # Breadcrumb
     st.markdown("[← Back to Home](?page=landing)", unsafe_allow_html=True)
 
-    # Title
+    # Page title and instructions
     st.title("Authorization")
     st.subheader("Please {} to continue".format("log in" if mode == "login" else "register"))
-    st.info("Enter your credentials below.")
+    st.info("Use your credentials to access the PTW Intelligence Suite.")
 
-    # Main Layout
+    # Main layout
     left_col, right_col = st.columns([1, 1])
     with left_col:
         st.markdown("""
-            ### About PTW Suite
-            Use our platform to model, analyze, and enhance your contract pricing strategy.
-            Gain real-time insights, benchmark data, and competitive intelligence.
+            ### Why PTW?
+            - Data-driven pricing strategy
+            - Real-time benchmarks
+            - Win-rate insights powered by AI
         """)
 
     with right_col:
