@@ -4,7 +4,7 @@ from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
 from Scripts.stripe_billing_integration import render_stripe_billing_tab
 from Scripts.admin_dashboard import render_admin_dashboard_tab
-from auth_landing_page import render_landing_page  # Updated to reference the dedicated landing page
+from auth_landing_page import render_auth_page  # Correct function for authorization
 
 st.set_page_config(
     page_title="Price-to-Win Intelligence Suite",
@@ -20,9 +20,9 @@ def main_app():
 
     if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
         if page == "auth":
-            render_landing_page()
+            render_auth_page()
         else:
-            render_landing_page()
+            render_auth_page()
         return
 
     with st.sidebar:
