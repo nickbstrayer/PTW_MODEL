@@ -4,8 +4,9 @@ from Scripts.streamlit_vendor_lookup import render_sam_vendor_lookup_tab
 from Scripts.streamlit_data_integration import render_data_integration_tab
 from Scripts.stripe_billing_integration import render_stripe_billing_tab
 from Scripts.admin_dashboard import render_admin_dashboard_tab
-from auth_landing_page import render_auth_page  # Dedicated authorization/landing page
+from auth_landing_page import render_auth_page  # Authorization page renderer
 
+# ✅ MUST BE FIRST Streamlit command
 st.set_page_config(
     page_title="Price-to-Win Intelligence Suite",
     layout="wide",
@@ -15,7 +16,7 @@ st.set_page_config(
 def main_app():
     initialize_session_state()
 
-    # Safely get the current page from query params
+    # Determine the page to route to based on query parameters
     try:
         query_params = st.query_params if hasattr(st, 'query_params') else st.experimental_get_query_params()
     except:
@@ -23,17 +24,17 @@ def main_app():
 
     page = query_params.get("page", ["landing"])[0]
 
-    # Route to authorization page if specified
+    # Route to authorization page (login/register)
     if page == "auth":
         render_auth_page()
         return
 
-    # Redirect unauthenticated users to landing page
+    # Default: if not logged in or not on main dashboard, show landing/auth page
     if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
         render_auth_page()
         return
 
-    # Main sidebar navigation
+    # Sidebar Navigation
     with st.sidebar:
         st.image("https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png", width=140)
         st.title("📘 Navigation")
@@ -46,14 +47,15 @@ def main_app():
             "🔐 Logout",
         ]
         selected_tab = st.radio("Select a section:", tabs)
+
         st.markdown(f"""
-            <div style='margin-top:2rem;'>
+            <div style='margin-top:2rem; font-size: 0.9rem;'>
                 <strong>Logged in as:</strong> {st.session_state.get("login_email", "User")}<br>
                 <em>Role:</em> {st.session_state.get("user_role", "member")}
             </div>
         """, unsafe_allow_html=True)
 
-    # Main content area based on selected tab
+    # Page content
     st.title("📊 Price-to-Win Intelligence Suite")
 
     if selected_tab.endswith("Home"):
