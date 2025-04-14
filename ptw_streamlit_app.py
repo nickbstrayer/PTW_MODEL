@@ -48,10 +48,10 @@ def main_app():
 
         with right:
             st.markdown("""
-                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); height: 100%;">
+                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 1rem;">🔐 Login or Register to PTW Intelligence Suite</h3>
             """, unsafe_allow_html=True)
-            with st.container():
-                render_auth_page()
+            render_auth_page()
             st.markdown("""
                 </div>
             """, unsafe_allow_html=True)
