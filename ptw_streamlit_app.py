@@ -35,7 +35,7 @@ def main_app():
         left, right = st.columns([1, 1])
         with left:
             st.markdown("""
-                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); height: 100%;">
                     <h2 style="font-size: 2rem; margin-bottom: 0.5rem;">Price-to-Win Intelligence Suite</h2>
                     <p style="font-size: 1.125rem; margin: 0.25rem 0;">Turn data into decisions.</p>
                     <p style="font-size: 1.125rem; margin: 0.25rem 0;">Price smarter. Win faster.</p>
@@ -45,14 +45,19 @@ def main_app():
                     </a>
                 </div>
             """, unsafe_allow_html=True)
+
         with right:
             st.markdown("""
-                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: flex; flex-direction: column;">
-                    <h3 style="margin-bottom: 1rem; font-size: 1.5rem;">Login or Register to PTW Intelligence Suite to Get Started</h3>
+                <div style="background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <h3 style="margin-bottom: 1.5rem; font-size: 1.5rem;">Login or Register to PTW Intelligence Suite to Get Started</h3>
+                    <div>
             """, unsafe_allow_html=True)
             with st.container():
                 render_auth_page()
-            st.markdown("</div>", unsafe_allow_html=True)
+            st.markdown("""
+                    </div>
+                </div>
+            """, unsafe_allow_html=True)
         return
 
     # Main app interface (authenticated)
