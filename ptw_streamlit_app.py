@@ -47,7 +47,8 @@ def main_app():
             """, unsafe_allow_html=True)
 
         with right:
-            render_auth_page()
+            with st.container():
+                render_auth_page()
         return
 
     # Main app interface (authenticated)
