@@ -1,15 +1,15 @@
 import streamlit as st
 from Scripts.streamlit_auth import render_auth_page as streamlit_render_auth_page, initialize_session_state
 
-# ✅ MUST BE FIRST Streamlit command
-st.set_page_config(
-    page_title="Authorization | PTW Intelligence Suite",
-    layout="wide",
-    page_icon="🔐"
-)
-
-# ✅ This page is only for authorization (Login/Register)
+# This page is only for authorization (Login/Register)
 def render_auth_page():
+    # Move set_page_config to the TOP of this file
+    st.set_page_config(
+        page_title="Authorization | PTW Intelligence Suite",
+        layout="wide",
+        page_icon="🔐"
+    )
+
     initialize_session_state()
 
     # Safely get mode (login or register)
@@ -20,14 +20,13 @@ def render_auth_page():
 
     mode = query_params.get("mode", ["register"])[0]
 
-    # Inject style
     st.markdown("""
         <style>
             .top-nav {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                padding: 1rem 2rem;
+                padding: 1.25rem 2rem;
                 background-color: #0f1e45;
                 color: white;
                 font-size: 1.25rem;
@@ -48,7 +47,7 @@ def render_auth_page():
         </style>
     """, unsafe_allow_html=True)
 
-    # Top nav bar
+    # Header
     st.markdown("""
         <div class="top-nav">
             <div>PTW Intelligence Suite</div>
@@ -59,22 +58,22 @@ def render_auth_page():
         </div>
     """, unsafe_allow_html=True)
 
-    # Breadcrumb
+    # Breadcrumb trail
     st.markdown("[← Back to Home](?page=landing)", unsafe_allow_html=True)
 
-    # Page title and instructions
+    # Page structure
     st.title("Authorization")
-    st.subheader("Please {} to continue".format("log in" if mode == "login" else "register"))
+    st.subheader(f"Please {'log in' if mode == 'login' else 'register'} to continue")
     st.info("Use your credentials to access the PTW Intelligence Suite.")
 
-    # Main layout
     left_col, right_col = st.columns([1, 1])
+
     with left_col:
+        st.subheader("Why PTW?")
         st.markdown("""
-            ### Why PTW?
-            - Data-driven pricing strategy
-            - Real-time benchmarks
-            - Win-rate insights powered by AI
+        - Data-driven pricing strategy  
+        - Real-time benchmarks  
+        - Win-rate insights powered by AI
         """)
 
     with right_col:
