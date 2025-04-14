@@ -39,6 +39,19 @@ def render_auth_page():
                 border-radius: 12px;
                 box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
             }
+            .auth-layout {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-start;
+                margin-top: 2rem;
+                gap: 3rem;
+            }
+            .auth-left {
+                flex: 1;
+            }
+            .auth-right {
+                flex: 1;
+            }
         </style>
     """, unsafe_allow_html=True)
 
@@ -56,23 +69,27 @@ def render_auth_page():
     # Breadcrumb trail
     st.markdown("[← Back to Home](?page=landing)", unsafe_allow_html=True)
 
-    # Page structure
+    # Title and Intro
     st.title("Authorization")
     st.subheader(f"Please {'log in' if mode == 'login' else 'register'} to continue")
     st.info("Use your credentials to access the PTW Intelligence Suite.")
 
-    left_col, right_col = st.columns([1, 1])
+    # Layout
+    st.markdown("<div class='auth-layout'>", unsafe_allow_html=True)
 
-    with left_col:
-        st.subheader("Why PTW?")
-        st.markdown("""
-        - Data-driven pricing strategy  
-        - Real-time benchmarks  
-        - Win-rate insights powered by AI
-        """)
+    st.markdown("""
+        <div class='auth-left'>
+            <h3>Why PTW?</h3>
+            <ul>
+                <li>Data-driven pricing strategy</li>
+                <li>Real-time benchmarks</li>
+                <li>Win-rate insights powered by AI</li>
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
 
-    with right_col:
-        with st.container():
-            st.markdown("<div class='auth-card'>", unsafe_allow_html=True)
-            streamlit_render_auth_page()
-            st.markdown("</div>", unsafe_allow_html=True)
+    st.markdown("<div class='auth-right'><div class='auth-card'>", unsafe_allow_html=True)
+    streamlit_render_auth_page()
+    st.markdown("</div></div>", unsafe_allow_html=True)
+
+    st.markdown("</div>", unsafe_allow_html=True)  # End layout div
