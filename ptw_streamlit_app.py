@@ -6,6 +6,7 @@ from Scripts.stripe_billing_integration import render_stripe_billing_tab
 from Scripts.admin_dashboard import render_admin_dashboard_tab
 from auth_landing_page import render_auth_page  # Correct function for authorization
 
+# Set page config as the first Streamlit command
 st.set_page_config(
     page_title="Price-to-Win Intelligence Suite",
     layout="wide",
@@ -15,57 +16,39 @@ st.set_page_config(
 def main_app():
     initialize_session_state()
 
-    query_params = st.experimental_get_query_params()
+    # Use the new query_params method
+    query_params = st.query_params
     page = query_params.get("page", ["landing"])[0]
 
     if not st.session_state.get("is_authenticated") or st.session_state.get("page") != "main":
-        if page == "auth":
-            render_auth_page()
-        else:
-            render_auth_page()
+        render_auth_page()
         return
 
-    with st.sidebar:
-        st.image("https://upload.wikimedia.org/wikipedia/commons/3/3f/Logo_placeholder.png", width=140)
-        st.title("📘 Navigation")
-        tabs = [
-            "🏠 Home",
-            "📈 Data Integration",
-            "🔍 SAM Vendor Lookup",
-            "💳 Manage Subscription",
-            "🛠️ Admin Dashboard",
-            "🔐 Logout",
-        ]
-        selected_tab = st.radio("Select a section:", tabs)
-        st.markdown(f"""
-            <div style='margin-top:2rem;'>
-                <strong>Logged in as:</strong> {st.session_state.get("login_email", "User")}<br>
-                <em>Role:</em> {st.session_state.get("user_role", "member")}
+    # Header navigation
+    st.markdown("""
+        <div style="background-color:#0f1e45; padding:1rem; display:flex; justify-content:space-between; align-items:center;">
+            <div style="color:white; font-size:1.5rem; font-weight:600;">PTW Intelligence Suite</div>
+            <div>
+                <a href="?page=auth&mode=login" style="color:white; margin-right:1.5rem; text-decoration:none; font-weight:500;">Log in</a>
+                <a href="?page=auth&mode=register" style="color:white; text-decoration:none; font-weight:500;">Register</a>
             </div>
-        """, unsafe_allow_html=True)
+        </div>
+    """, unsafe_allow_html=True)
 
-    st.title("📊 Price-to-Win Intelligence Suite")
+    # Hero and Auth CTA Split
+    col1, col2 = st.columns(2)
+    with col1:
+        st.markdown("""
+        ## Price-to-Win Intelligence Suite
+        Turn data into decisions.  
+        Price smarter. Win faster.  
+        Welcome to PTW Intelligence Suite.
+        """)
+        st.button("Get Started", on_click=lambda: st.switch_page("?page=auth&mode=register"))
 
-    if selected_tab.endswith("Home"):
-        st.subheader("Welcome Back!")
-        st.info("Use the sidebar to navigate to different tools and dashboards.")
-    elif selected_tab.endswith("Data Integration"):
-        render_data_integration_tab()
-    elif selected_tab.endswith("SAM Vendor Lookup"):
-        render_sam_vendor_lookup_tab()
-    elif selected_tab.endswith("Manage Subscription"):
-        render_stripe_billing_tab()
-    elif selected_tab.endswith("Admin Dashboard"):
-        if st.session_state.get("user_role") == "admin":
-            render_admin_dashboard_tab()
-        else:
-            st.warning("⚠️ Admin access required.")
-    elif selected_tab.endswith("Logout"):
-        st.session_state.is_authenticated = False
-        st.session_state.login_email = None
-        st.session_state.user_role = None
-        st.session_state.page = "landing"
-        st.success("✅ Logged out successfully. Please refresh.")
+    with col2:
+        # Inline render_auth_page depending on mode (to avoid duplication)
+        render_auth_page()
 
 if __name__ == "__main__":
     main_app()
